@@ -195,7 +195,7 @@
       key.textContent=match?(match.root?"1":String(match.degree)):"";
       key.setAttribute("aria-label",noteName(60+i)+" "+(match?"درجة في المقام":""));
       key.title=noteName(60+i)+(match?" · الدرجة "+match.degree:"");
-      key.addEventListener("click",()=>playPianoNote(60+i,noteName(60+i)));
+      key.addEventListener("click",()=>{let target=60+i;while(target<data.root)target+=12;while(target>=data.root+12)target-=12;playPianoNote(target,noteName(target));});
       keyboard.append(key);
     }
     data.steps.slice(0,-1).forEach((q,i)=>{
