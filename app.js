@@ -137,8 +137,132 @@
     osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+2);
     osc.onended=()=>ctx.close();
   }
+
+  const maqams = {
+    bayati:{name:"بيات",root:62,rootLabel:"ري",steps:[0,3,4,7,10,12,14,24],desc:"بيات على درجة ري. يحتوي على مي نصف بيمول، وهي سمة أساسية في جنس البيات."},
+    kurd:{name:"كرد",root:62,rootLabel:"ري",steps:[0,2,4,7,8,12,14,24],desc:"كرد على درجة ري، ويُعرض هنا بسلم كرد الصاعد ذي الثانية والثالثة الصغيرة."},
+    saba:{name:"صبا",root:62,rootLabel:"ري",steps:[0,3,4,6,10,12,14,24],desc:"صبا على درجة ري. يتضمن مي نصف بيمول ودرجة فا، ثم صول بيمول في هذا التمثيل التعليمي."},
+    sikah:{name:"سيكا",root:63.5,rootLabel:"مي نصف بيمول",steps:[0,1,5,8,11,13,15,24],desc:"سيكا على مي نصف بيمول. العلامة البنفسجية تمثل أرباع الصوت بين مفاتيح البيانو."},
+    ajam:{name:"عجم",root:60,rootLabel:"دو",steps:[0,4,8,10,14,18,22,24],desc:"عجم على درجة دو، وهو السلم الكبير المعروف بأبعاده المنتظمة."},
+    nahawand:{name:"نهاوند",root:60,rootLabel:"دو",steps:[0,4,6,10,14,16,20,24],desc:"نهاوند على درجة دو، بصيغة السلم الصغير الطبيعي."},
+    rast:{name:"رست",root:60,rootLabel:"دو",steps:[0,4,7,10,14,18,21,24],desc:"رست على درجة دو، مع مي نصف بيمول وسي نصف بيمول."}
+  };
+  const chromatic=["دو","دو دييز","ري","ري دييز","مي","فا","فا دييز","صول","صول دييز","لا","لا دييز","سي"];
+  const natural=["دو","ري","مي","فا","صول","لا","سي"];
+  const rootChoices=Array.from({length:12},(_,i)=>({value:i,label:chromatic[i]}));
+  rootChoices.push({value:"63.5",label:"مي نصف بيمول"});
+  const pianoState={context:null,oscillators:[],sequenceTimer:null,sequenceIndex:0,notes:[]};
+  function noteName(midi){
+    const lower=Math.floor(midi),fraction=midi-lower;
+    if(Math.abs(fraction-.5)<.001)return chromatic[(Math.round(lower)+1)%12]+" نصف بيمول";
+    return chromatic[((Math.round(midi)%12)+12)%12];
+  }
+  function pianoPosition(semitone){
+    const centers=[.5,1,1.5,2,2.5,3.5,4,4.5,5,5.5,6,6.5];
+    const s=((semitone%12)+12)%12,lo=Math.floor(s),hi=Math.min(11,lo+1);
+    if(s===lo)return centers[lo];
+    return centers[lo]+(centers[hi]-centers[lo])*(s-lo);
+  }
+  function intervalLabel(q){
+    const labels={1:"ربع تون",2:"نصف تون",3:"ثلاثة أرباع تون",4:"تون كامل",5:"تون وربع",6:"تون ونصف",7:"تون وثلاثة أرباع",8:"تونان"};
+    return labels[q]||((q/2)+" تون");
+  }
+  function getMaqamData(){
+    const m=maqams[$("maqamSelect").value];
+    const selected=$("maqamRoot").value;
+    const root=selected===""?m.root:Number(selected);
+    return {...m,root,notes:m.steps.map(q=>root+q/2)};
+  }
+  function buildPiano(){
+    const data=getMaqamData(),keyboard=$("pianoKeyboard");
+    keyboard.innerHTML="";
+    $("pianoMaqamName").textContent="مقام "+data.name+" · "+noteName(data.root);
+    $("maqamDescription").textContent=data.desc;
+    const noteSet=new Map();
+    data.steps.slice(0,-1).forEach((q,i)=>{
+      const semitones=q/2,rounded=Math.round(semitones);
+      if(Math.abs(semitones-rounded)<.001)noteSet.set(((rounded%12)+12)%12,{degree:i+1,q,root:i===0});
+    });
+    const whitePositions=[0,2,4,5,7,9,11];
+    const blackPositions=[1,3,6,8,10];
+    for(let i=0;i<12;i++){
+      const isBlack=blackPositions.includes(i);
+      const key=document.createElement("button");key.type="button";key.className="piano-key "+(isBlack?"black":"white");
+      const match=noteSet.get(i);
+      if(match){key.classList.add("active");if(match.root)key.classList.add("root");}
+      if(isBlack){const before=whitePositions.filter(n=>n<i).length;key.style.left=((before+.68)/7*100)+"%";}
+      else{const pos=whitePositions.indexOf(i);key.style.left=(pos/7*100)+"%";}
+      key.textContent=match?(match.root?"1":String(match.degree)):"";
+      key.setAttribute("aria-label",noteName(data.root+i)+" "+(match?"درجة في المقام":""));
+      key.title=noteName(data.root+i)+(match?" · الدرجة "+match.degree:"");
+      key.addEventListener("click",()=>playPianoNote(data.root+i,noteName(data.root+i)));
+      keyboard.append(key);
+    }
+    data.steps.slice(0,-1).forEach((q,i)=>{
+      if(q%2===0)return;
+      const semitones=q/2,position=pianoPosition(semitones);
+      const marker=document.createElement("div");marker.className="quarter-marker";marker.style.left=(position/7*100)+"%";
+      const button=document.createElement("button");button.type="button";button.textContent=String(i+1)+"¼";
+      button.title=noteName(data.root+semitones)+" · درجة ربع صوت · اضغط للسماع";
+      button.setAttribute("aria-label","عزف "+noteName(data.root+semitones));
+      button.addEventListener("click",()=>playPianoNote(data.root+semitones,noteName(data.root+semitones)));
+      const label=document.createElement("span");label.textContent=noteName(data.root+semitones);
+      marker.append(button,label);keyboard.append(marker);
+    });
+    renderScaleDetails(data);
+  }
+  function renderScaleDetails(data){
+    const notes=$("scaleNotes"),intervals=$("scaleIntervals");notes.innerHTML="";intervals.innerHTML="";
+    data.steps.forEach((q,i)=>{
+      const item=document.createElement("div");item.className="scale-note"+(i===0?" root-note":"");
+      const name=document.createElement("b");name.textContent=noteName(data.root+q/2);
+      const detail=document.createElement("small");detail.textContent=i===0?"القرار / البداية":i===data.steps.length-1?"الجواب / الأوكتاف":"الدرجة "+(i+1);
+      item.append(name,detail);notes.append(item);
+    });
+    for(let i=1;i<data.steps.length;i++){
+      const diff=data.steps[i]-data.steps[i-1],chip=document.createElement("span");chip.className="interval-chip";
+      const degree=document.createElement("b");degree.textContent=(i)+"→"+(i+1);
+      chip.append(degree,document.createTextNode(intervalLabel(diff)));intervals.append(chip);
+    }
+  }
+  async function playPianoNote(midi,label,duration=.65){
+    try{
+      if(!pianoState.context)pianoState.context=new (window.AudioContext||window.webkitAudioContext)();
+      const ctx=pianoState.context;if(ctx.state==="suspended")await ctx.resume();
+      const osc=ctx.createOscillator(),gain=ctx.createGain(),now=ctx.currentTime;
+      osc.type="triangle";osc.frequency.value=A4*Math.pow(2,(midi-69)/12);
+      gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.18,now+.025);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
+      osc.connect(gain);gain.connect(ctx.destination);osc.start(now);osc.stop(now+duration+.03);
+      pianoState.oscillators.push(osc);osc.onended=()=>{pianoState.oscillators=pianoState.oscillators.filter(x=>x!==osc);};
+      $("pianoNowPlaying").textContent="النغمة: "+label+" · "+(A4*Math.pow(2,(midi-69)/12)).toFixed(2)+" Hz";
+    }catch(error){$("pianoNowPlaying").textContent="تعذر تشغيل الصوت. جرّب الضغط على المفتاح مرة أخرى.";}
+  }
+  function stopScalePlayback(){
+    if(pianoState.sequenceTimer){clearTimeout(pianoState.sequenceTimer);pianoState.sequenceTimer=null;}
+    pianoState.oscillators.forEach(osc=>{try{osc.stop();}catch(e){}});
+    pianoState.oscillators=[];$("playScale").disabled=false;$("stopScale").disabled=true;
+    $("pianoNowPlaying").textContent="تم إيقاف العزف.";
+  }
+  function playFullScale(){
+    stopScalePlayback();const data=getMaqamData();pianoState.notes=data.steps.map(q=>data.root+q/2);pianoState.sequenceIndex=0;
+    $("playScale").disabled=true;$("stopScale").disabled=false;
+    const next=()=>{if(pianoState.sequenceIndex>=pianoState.notes.length){pianoState.sequenceTimer=null;$("playScale").disabled=false;$("stopScale").disabled=true;$("pianoNowPlaying").textContent="انتهى عزف مقام "+data.name+".";return;}
+      const midi=pianoState.notes[pianoState.sequenceIndex++];playPianoNote(midi,noteName(midi),.48);pianoState.sequenceTimer=setTimeout(next,560);};
+    next();
+  }
+  function initMaqam(){
+    const select=$("maqamRoot");
+    rootChoices.forEach(item=>{const option=document.createElement("option");option.value=String(item.value);option.textContent=item.label;select.append(option);});
+    function updateRootDefault(){const m=maqams[$("maqamSelect").value];select.value=String(m.root);}
+    $("maqamSelect").addEventListener("change",()=>{updateRootDefault();stopScalePlayback();buildPiano();});
+    select.addEventListener("change",()=>{stopScalePlayback();buildPiano();});
+    $("playScale").addEventListener("click",playFullScale);$("stopScale").addEventListener("click",stopScalePlayback);
+    updateRootDefault();buildPiano();
+  }
+
   $("instrumentGrid").addEventListener("click",e=>{const b=e.target.closest("[data-instrument]");if(!b)return;state.instrument=b.dataset.instrument;document.querySelectorAll(".instrument").forEach(x=>x.classList.toggle("active",x===b));renderTuning();});
   $("tuningSelect").addEventListener("change",e=>{state.tuningIndex=Number(e.target.value);state.stringIndex=0;$("tuningNote").textContent=currentTuning().note;renderStrings();});
   $("startButton").addEventListener("click",start);$("stopButton").addEventListener("click",stop);$("playReference").addEventListener("click",playReference);
   renderTuning();
+  initMaqam();
 })();
