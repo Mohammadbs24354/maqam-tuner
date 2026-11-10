@@ -140,16 +140,16 @@
 
   const maqams = {
     bayati:{name:"بيات",root:62,rootLabel:"ري",steps:[0,3,4,7,10,12,14,24],desc:"بيات على درجة ري. يحتوي على مي نصف بيمول، وهي سمة أساسية في جنس البيات."},
-    kurd:{name:"كرد",root:62,rootLabel:"ري",steps:[0,2,4,7,8,12,14,24],desc:"كرد على درجة ري، ويُعرض هنا بسلم كرد الصاعد ذي الثانية والثالثة الصغيرة."},
-    saba:{name:"صبا",root:62,rootLabel:"ري",steps:[0,3,4,6,10,12,14,24],desc:"صبا على درجة ري. يتضمن مي نصف بيمول ودرجة فا، ثم صول بيمول في هذا التمثيل التعليمي."},
-    sikah:{name:"سيكا",root:63.5,rootLabel:"مي نصف بيمول",steps:[0,1,5,8,11,13,15,24],desc:"سيكا على مي نصف بيمول. العلامة البنفسجية تمثل أرباع الصوت بين مفاتيح البيانو."},
+    kurd:{name:"كرد",root:62,rootLabel:"ري",steps:[0,2,6,10,12,16,20,24],desc:"كرد على درجة ري، ويُعرض هنا بسلم كرد الصاعد ذي الثانية والثالثة الصغيرة."},
+    saba:{name:"صبا",root:62,rootLabel:"ري",steps:[0,3,6,8,14,16,20,24],desc:"صبا على درجة ري. يتضمن مي نصف بيمول ودرجة فا، ثم صول بيمول في هذا التمثيل التعليمي."},
+    sikah:{name:"سيكا",root:63.5,rootLabel:"مي نصف بيمول",steps:[0,3,7,11,13,17,21,24],desc:"سيكا على مي نصف بيمول. العلامة البنفسجية تمثل أرباع الصوت بين مفاتيح البيانو."},
     ajam:{name:"عجم",root:60,rootLabel:"دو",steps:[0,4,8,10,14,18,22,24],desc:"عجم على درجة دو، وهو السلم الكبير المعروف بأبعاده المنتظمة."},
     nahawand:{name:"نهاوند",root:60,rootLabel:"دو",steps:[0,4,6,10,14,16,20,24],desc:"نهاوند على درجة دو، بصيغة السلم الصغير الطبيعي."},
-    rast:{name:"رست",root:60,rootLabel:"دو",steps:[0,4,7,10,14,18,21,24],desc:"رست على درجة دو، مع مي نصف بيمول وسي نصف بيمول."}
+    rast:{name:"رست",root:60,rootLabel:"دو",steps:[0,4,7,8,12,16,19,24],desc:"رست على درجة دو، مع مي نصف بيمول وسي نصف بيمول."}
   };
   const chromatic=["دو","دو دييز","ري","ري دييز","مي","فا","فا دييز","صول","صول دييز","لا","لا دييز","سي"];
   const natural=["دو","ري","مي","فا","صول","لا","سي"];
-  const rootChoices=Array.from({length:12},(_,i)=>({value:i,label:chromatic[i]}));
+  const rootChoices=Array.from({length:12},(_,i)=>({value:i+60,label:chromatic[i]}));
   rootChoices.push({value:"63.5",label:"مي نصف بيمول"});
   const pianoState={context:null,oscillators:[],sequenceTimer:null,sequenceIndex:0,notes:[]};
   function noteName(midi){
@@ -190,7 +190,7 @@
       const key=document.createElement("button");key.type="button";key.className="piano-key "+(isBlack?"black":"white");
       const match=noteSet.get(i);
       if(match){key.classList.add("active");if(match.root)key.classList.add("root");}
-      if(isBlack){const before=whitePositions.filter(n=>n<i).length;key.style.left=((before+.68)/7*100)+"%";}
+      if(isBlack){const before=whitePositions.filter(n=>n<i).length;key.style.left=((before-.32)/7*100)+"%";}
       else{const pos=whitePositions.indexOf(i);key.style.left=(pos/7*100)+"%";}
       key.textContent=match?(match.root?"1":String(match.degree)):"";
       key.setAttribute("aria-label",noteName(data.root+i)+" "+(match?"درجة في المقام":""));
@@ -201,7 +201,7 @@
     data.steps.slice(0,-1).forEach((q,i)=>{
       if(q%2===0)return;
       const semitones=q/2,position=pianoPosition(semitones);
-      const marker=document.createElement("div");marker.className="quarter-marker";marker.style.left=(position/7*100)+"%";
+      const marker=document.createElement("div");marker.className="quarter-marker"+(i===0?" root-marker":"");marker.style.left=(position/7*100)+"%";
       const button=document.createElement("button");button.type="button";button.textContent=String(i+1)+"¼";
       button.title=noteName(data.root+semitones)+" · درجة ربع صوت · اضغط للسماع";
       button.setAttribute("aria-label","عزف "+noteName(data.root+semitones));
