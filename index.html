@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="مقام — موالف رقمي للعود والجيتار والبزق والكمان الغربي والشرقي.">
+  <title>مقام | موالف الآلات الموسيقية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="مقام - الصفحة الرئيسية"><span class="brand-mark">م</span><span>مقام<small>MAQAM TUNER</small></span></a>
+    <span class="top-note"><span class="live-dot"></span> استمع، اضبط، واعزف</span>
+  </header>
+
+  <main class="page">
+    <section class="intro">
+      <p class="eyebrow">دقّة تلتقي بالموسيقى</p>
+      <h1>خلّي نغمتك <span>في المقام.</span></h1>
+      <p class="lead">موالف موسيقي يساعدك على ضبط أوتارك بدقة، من أول نغمة حتى آخر وتر.</p>
+    </section>
+
+    <section class="workspace" aria-label="موالف الأوتار">
+      <div class="panel tuner-panel">
+        <div class="panel-head">
+          <div><span class="section-kicker">01 / الموالف</span><h2>اضبط آلتك</h2></div>
+          <span id="micStatus" class="status-pill"><i></i> الميكروفون متوقف</span>
+        </div>
+
+        <div class="instrument-grid" id="instrumentGrid" aria-label="اختر الآلة">
+          <button class="instrument active" data-instrument="oud"><span class="instrument-icon">عود</span><b>العود</b></button>
+          <button class="instrument" data-instrument="guitar"><span class="instrument-icon">♬</span><b>الجيتار</b></button>
+          <button class="instrument" data-instrument="buzuq"><span class="instrument-icon">بز</span><b>البزق</b></button>
+          <button class="instrument" data-instrument="violin"><span class="instrument-icon">♩</span><b>الكمان الغربي</b></button>
+          <button class="instrument" data-instrument="easternViolin"><span class="instrument-icon">♪</span><b>الكمان الشرقي</b></button>
+        </div>
+
+        <div class="settings-row">
+          <label for="tuningSelect">نمط الضبط</label>
+          <select id="tuningSelect" aria-label="نمط الضبط"></select>
+        </div>
+        <p id="tuningNote" class="tuning-note"></p>
+
+        <div class="pitch-card">
+          <div class="pitch-top"><span>النغمة المكتشفة</span><span id="pitchState">بانتظار الصوت</span></div>
+          <div class="note-display"><strong id="noteName">—</strong><div class="octave" id="noteOctave"> </div></div>
+          <div class="frequency"><strong id="frequency">—</strong><span>Hz</span></div>
+          <div class="meter" aria-label="مؤشر دقة الضبط">
+            <span class="meter-label left">منخفض</span><span class="meter-label center">مضبوط</span><span class="meter-label right">مرتفع</span>
+            <div class="meter-track"><span class="meter-zone"></span><span id="meterNeedle" class="meter-needle"></span></div>
+          </div>
+          <div class="cents-line"><span>الانحراف</span><strong id="centsValue">— سنت</strong></div>
+          <p id="guidance" class="guidance">اضغط «ابدأ الاستماع» ثم اعزف وتراً واحداً بوضوح.</p>
+        </div>
+
+        <div class="actions">
+          <button id="startButton" class="primary-button"><span>●</span> ابدأ الاستماع</button>
+          <button id="stopButton" class="secondary-button" disabled>إيقاف</button>
+        </div>
+        <p id="errorMessage" class="error-message" role="alert" hidden></p>
+        <div class="permission-help"><span>ⓘ</span><p>يحتاج الميكروفون إلى إذن منك، ويعمل في اتصال آمن <b>HTTPS</b> أو على <b>localhost</b>. إذا رفضت الإذن، اسمح باستخدام الميكروفون من إعدادات الموقع ثم أعد المحاولة.</p></div>
+      </div>
+
+      <aside class="panel strings-panel">
+        <div class="panel-head"><div><span class="section-kicker">02 / الأوتار</span><h2>الأوتار المستهدفة</h2></div></div>
+        <p class="muted">اختر وتراً لسماع نغمته المرجعية، ثم قارنه بالصوت الحقيقي.</p>
+        <div id="stringList" class="string-list"></div>
+        <div class="reference-box"><span class="speaker-icon">♫</span><div><b>النغمة المرجعية</b><small>صوت اصطناعي بتردد الوتر المحدد</small></div><button id="playReference" class="play-button" aria-label="تشغيل النغمة المرجعية">▶</button></div>
+        <p class="small-note">يمكنك تعديل ترددات الأوتار من قائمة الإعدادات أو تغيير النمط بما يناسب آلتك.</p>
+      </aside>
+    </section>
+
+    <section class="info-grid">
+      <article class="info-card"><span class="info-number">01</span><h3>اختر آلتك ونمطها</h3><p>تختلف الأوتار والتقاليد الموسيقية؛ اختر أقرب ضبط شائع لآلتك.</p></article>
+      <article class="info-card"><span class="info-number">02</span><h3>اعزف وتراً واحداً</h3><p>اقترب من الميكروفون واعزف نغمة ثابتة دون ضوضاء محيطة قدر الإمكان.</p></article>
+      <article class="info-card"><span class="info-number">03</span><h3>راقب المؤشر</h3><p>حرّك شدّ الوتر تدريجياً حتى يصبح الانحراف قريباً من صفر سنت.</p></article>
+    </section>
+
+    <section class="disclaimer"><b>ملاحظة حول الضبط الشرقي</b><p>العود والبزق والكمان الشرقي لها مدارس وتقاليد متعددة، وقد يختلف عدد الأوتار والتردد المرجعي بحسب المنطقة والعازف. الأنماط المعروضة نقطة بداية شائعة وليست معياراً موحداً؛ استخدم الإعداد المخصص وعدّل الترددات وفق مرجع أستاذك أو فرقتك.</p></section>
+  </main>
+
+  <footer><span>مقام · MAQAM TUNER</span><span>صُنع للموسيقى العربية والعالمية</span></footer>
+</body>
+</html>
