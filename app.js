@@ -142,12 +142,12 @@
     bayati:{name:"بيات",root:62,rootLabel:"ري",steps:[0,3,6,10,14,16,20,24],desc:"بيات على ري: ري، مي نصف بيمول، فا، صول، لا، سي بيمول، دو، ري. قد تُرفع السادسة إلى سي نصف بيمول في بعض الأداءات."},
     kurd:{name:"كرد",root:62,rootLabel:"ري",steps:[0,2,6,10,14,16,20,24],desc:"كرد على ري: ري، مي بيمول، فا، صول، لا، سي بيمول، دو، ري."},
     saba:{name:"صبا",root:62,rootLabel:"ري",steps:[0,3,6,8,14,16,20,22],desc:"صبا على ري: ري، مي نصف بيمول، فا، صول بيمول، لا، سي بيمول، دو، ري بيمول. هذه صيغة صاعدة لا تنتهي بالأوكتاف."},
-    sikah:{name:"سيكا",root:63.5,rootLabel:"مي نصف بيمول",steps:[0,3,7,11,13,17,21,24],desc:"سيكا على مي نصف بيمول. العلامة البنفسجية تمثل أرباع الصوت بين مفاتيح البيانو."},
+    sikah:{name:"سيكاه",root:63.5,rootLabel:"مي نصف بيمول",steps:[0,3,7,11,13,17,21,24],desc:"سيكاه على مي نصف بيمول: مي نصف بيمول، فا، صول (الغمّاز)، لا، سي بيمول، دو، ري، ثم مي نصف بيمول جواباً. يبدأ بجنس السيكاه، ويتبعه جنس الراست الأعلى على الغمّاز. قد يختلف السير اللحني والتفاصيل بحسب الرواية."},
     ajam:{name:"عجم",root:60,rootLabel:"دو",steps:[0,4,8,10,14,18,22,24],desc:"عجم على درجة دو، وهو السلم الكبير المعروف بأبعاده المنتظمة."},
     nahawand:{name:"نهاوند",root:60,rootLabel:"دو",steps:[0,4,6,10,14,16,20,24],desc:"نهاوند على درجة دو، بصيغة السلم الصغير الطبيعي."},
     rast:{name:"رست",root:60,rootLabel:"دو",steps:[0,4,7,10,14,18,21,24],desc:"رست على دو: دو، ري، مي نصف بيمول، فا، صول، لا، سي نصف بيمول، دو. في الهبوط قد تختلف السابعة وتُؤدّى سي بيمول."}
   };
-  const chromatic=["دو","دو دييز","ري","ري دييز","مي","فا","فا دييز","صول","صول دييز","لا","لا دييز","سي"];
+  const chromatic=["دو","ري بيمول","ري","مي بيمول","مي","فا","صول بيمول","صول","لا بيمول","لا","سي بيمول","سي"];
   const natural=["دو","ري","مي","فا","صول","لا","سي"];
   const rootChoices=Array.from({length:12},(_,i)=>({value:i+60,label:chromatic[i]}));
   rootChoices.push({value:"63.5",label:"مي نصف بيمول"});
@@ -238,17 +238,21 @@
     data.steps.slice(0,-1).forEach((q,i)=>{
       const midi=data.root+q/2,pitch=((midi%12)+12)%12;
       if(Math.abs(pitch-Math.round(pitch))<.001)return;
-      const relativePitch=(midi-60),octave=Math.floor(relativePitch/12),withinOctave=((relativePitch%12)+12)%12;
-      const marker=document.createElement("div");marker.className="quarter-marker"+(i===0?" root-marker":"");
+      const relativePitch=midi-60,octave=Math.floor(relativePitch/12),withinOctave=((relativePitch%12)+12)%12;
+      const marker=document.createElement("button");
+      marker.type="button";
+      marker.className="quarter-key"+(i===0?" root-quarter-key":"");
       marker.style.left=((octave*7+pianoPosition(withinOctave))/whiteCount*100)+"%";
-      const button=document.createElement("button");button.type="button";button.textContent=String(i+1)+"¼";
-      button.title=noteName(midi)+" · ربع صوت · اضغط باستمرار للعزف";
+      marker.setAttribute("aria-label",noteName(midi)+"، نغمة ربع صوت، اضغط باستمرار للعزف");
+      marker.title=noteName(midi)+" · نغمة شرقية بين مفاتيح البيانو · اضغط باستمرار للعزف";
+      const note=document.createElement("span");note.textContent=noteName(midi);
+      const symbol=document.createElement("small");symbol.textContent="¼";
+      marker.append(note,symbol);
       const token="quarter-"+i;
-      button.addEventListener("pointerdown",e=>{e.preventDefault();button.setPointerCapture(e.pointerId);startHeldPianoNote(midi,noteName(midi),token);button.classList.add("pressed");});
-      const release=()=>{stopHeldPianoNote(token);button.classList.remove("pressed");};
-      button.addEventListener("pointerup",release);button.addEventListener("pointercancel",release);button.addEventListener("lostpointercapture",release);
-      const label=document.createElement("span");label.textContent=noteName(midi);
-      marker.append(button,label);keyboard.append(marker);
+      marker.addEventListener("pointerdown",e=>{e.preventDefault();marker.setPointerCapture(e.pointerId);startHeldPianoNote(midi,noteName(midi),token);marker.classList.add("pressed");});
+      const release=()=>{stopHeldPianoNote(token);marker.classList.remove("pressed");};
+      marker.addEventListener("pointerup",release);marker.addEventListener("pointercancel",release);marker.addEventListener("lostpointercapture",release);
+      marker.addEventListener("contextmenu",e=>e.preventDefault());keyboard.append(marker);
     });
     renderScaleDetails(data);
   }
