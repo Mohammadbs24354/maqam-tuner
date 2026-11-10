@@ -284,11 +284,20 @@
 
 
   function initNavigation(){
-    const nav=$("pageNavigation");
-    nav.addEventListener("change",()=>{
-      document.querySelectorAll(".site-page").forEach(page=>page.hidden=page.id!==nav.value);
-      window.scrollTo({top:0,behavior:"smooth"});
-      if(nav.value==="maqamPage")buildPiano();
+    const links=document.querySelectorAll(".nav-link[data-page]");
+    links.forEach(link=>{
+      link.addEventListener("click",()=>{
+        const target=link.dataset.page;
+        document.querySelectorAll(".site-page").forEach(page=>page.hidden=page.id!==target);
+        links.forEach(item=>{
+          const active=item===link;
+          item.classList.toggle("active",active);
+          if(active)item.setAttribute("aria-current","page");
+          else item.removeAttribute("aria-current");
+        });
+        window.scrollTo({top:0,behavior:"smooth"});
+        if(target==="maqamPage")buildPiano();
+      });
     });
   }
 
