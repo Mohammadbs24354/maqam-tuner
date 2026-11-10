@@ -139,13 +139,13 @@
   }
 
   const maqams = {
-    bayati:{name:"بيات",root:62,rootLabel:"ري",steps:[0,3,4,7,10,12,14,24],desc:"بيات على درجة ري. يحتوي على مي نصف بيمول، وهي سمة أساسية في جنس البيات."},
-    kurd:{name:"كرد",root:62,rootLabel:"ري",steps:[0,2,6,10,12,16,20,24],desc:"كرد على درجة ري، ويُعرض هنا بسلم كرد الصاعد ذي الثانية والثالثة الصغيرة."},
-    saba:{name:"صبا",root:62,rootLabel:"ري",steps:[0,3,6,8,14,16,20,24],desc:"صبا على درجة ري. يتضمن مي نصف بيمول ودرجة فا، ثم صول بيمول في هذا التمثيل التعليمي."},
+    bayati:{name:"بيات",root:62,rootLabel:"ري",steps:[0,3,6,10,14,16,20,24],desc:"بيات على ري: ري، مي نصف بيمول، فا، صول، لا، سي بيمول، دو، ري. قد تُرفع السادسة إلى سي نصف بيمول في بعض الأداءات."},
+    kurd:{name:"كرد",root:62,rootLabel:"ري",steps:[0,2,6,10,14,16,20,24],desc:"كرد على ري: ري، مي بيمول، فا، صول، لا، سي بيمول، دو، ري."},
+    saba:{name:"صبا",root:62,rootLabel:"ري",steps:[0,3,6,8,14,16,20,22],desc:"صبا على ري: ري، مي نصف بيمول، فا، صول بيمول، لا، سي بيمول، دو، ري بيمول. هذه صيغة صاعدة لا تنتهي بالأوكتاف."},
     sikah:{name:"سيكا",root:63.5,rootLabel:"مي نصف بيمول",steps:[0,3,7,11,13,17,21,24],desc:"سيكا على مي نصف بيمول. العلامة البنفسجية تمثل أرباع الصوت بين مفاتيح البيانو."},
     ajam:{name:"عجم",root:60,rootLabel:"دو",steps:[0,4,8,10,14,18,22,24],desc:"عجم على درجة دو، وهو السلم الكبير المعروف بأبعاده المنتظمة."},
     nahawand:{name:"نهاوند",root:60,rootLabel:"دو",steps:[0,4,6,10,14,16,20,24],desc:"نهاوند على درجة دو، بصيغة السلم الصغير الطبيعي."},
-    rast:{name:"رست",root:60,rootLabel:"دو",steps:[0,4,7,8,12,16,19,24],desc:"رست على درجة دو، مع مي نصف بيمول وسي نصف بيمول."}
+    rast:{name:"رست",root:60,rootLabel:"دو",steps:[0,4,7,10,14,18,21,24],desc:"رست على دو: دو، ري، مي نصف بيمول، فا، صول، لا، سي نصف بيمول، دو. في الهبوط قد تختلف السابعة وتُؤدّى سي بيمول."}
   };
   const chromatic=["دو","دو دييز","ري","ري دييز","مي","فا","فا دييز","صول","صول دييز","لا","لا دييز","سي"];
   const natural=["دو","ري","مي","فا","صول","لا","سي"];
@@ -159,9 +159,9 @@
   }
   function pianoPosition(semitone){
     const centers=[.5,1,1.5,2,2.5,3.5,4,4.5,5,5.5,6,6.5];
-    const s=((semitone%12)+12)%12,lo=Math.floor(s),hi=Math.min(11,lo+1);
-    if(s===lo)return centers[lo];
-    return centers[lo]+(centers[hi]-centers[lo])*(s-lo);
+    const s=((semitone%12)+12)%12,lo=Math.floor(s),hi=(lo+1)%12;
+    const next=hi===0?7:centers[hi];
+    return centers[lo]+(next-centers[lo])*(s-lo);
   }
   function intervalLabel(q){
     const labels={1:"ربع تون",2:"نصف تون",3:"ثلاثة أرباع تون",4:"تون كامل",5:"تون وربع",6:"تون ونصف",7:"تون وثلاثة أرباع",8:"تونان"};
@@ -238,11 +238,9 @@
     data.steps.slice(0,-1).forEach((q,i)=>{
       const midi=data.root+q/2,pitch=((midi%12)+12)%12;
       if(Math.abs(pitch-Math.round(pitch))<.001)return;
-      const semitone=Math.floor(pitch),octave=Math.floor((data.root+q/2-60)/12);
-      const whiteBefore=whitePcs.filter(n=>n<=semitone).length;
-      const whiteIndex=octave*7+Math.max(0,whiteBefore-1);
+      const relativePitch=(midi-60),octave=Math.floor(relativePitch/12),withinOctave=((relativePitch%12)+12)%12;
       const marker=document.createElement("div");marker.className="quarter-marker"+(i===0?" root-marker":"");
-      marker.style.left=((whiteIndex+.5)/whiteCount*100)+"%";
+      marker.style.left=((octave*7+pianoPosition(withinOctave))/whiteCount*100)+"%";
       const button=document.createElement("button");button.type="button";button.textContent=String(i+1)+"¼";
       button.title=noteName(midi)+" · ربع صوت · اضغط باستمرار للعزف";
       const token="quarter-"+i;
@@ -259,7 +257,7 @@
     data.steps.forEach((q,i)=>{
       const item=document.createElement("div");item.className="scale-note"+(i===0?" root-note":"");
       const name=document.createElement("b");name.textContent=noteName(data.root+q/2);
-      const detail=document.createElement("small");detail.textContent=i===0?"القرار / البداية":i===data.steps.length-1?"الجواب / الأوكتاف":"الدرجة "+(i+1);
+      const detail=document.createElement("small");detail.textContent=i===0?"القرار / البداية":i===data.steps.length-1?(Math.abs(q-24)<.001?"الجواب / الأوكتاف":"القفلة / الدرجة الأخيرة"):"الدرجة "+(i+1);
       item.append(name,detail);notes.append(item);
     });
     for(let i=1;i<data.steps.length;i++){
