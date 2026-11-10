@@ -15,6 +15,10 @@
 <body>
   <header class="topbar">
     <a class="brand" href="#" aria-label="مقام - الصفحة الرئيسية"><span class="brand-mark">م</span><span>مقام<small>MAQAM TUNER</small></span></a>
+    <nav class="main-nav" aria-label="القائمة الرئيسية">
+      <button type="button" class="nav-link active" data-page="tunerPage" aria-current="page">موالف الآلات</button>
+      <button type="button" class="nav-link" data-page="maqamPage">المقامات</button>
+    </nav>
     <span class="top-note"><span class="live-dot"></span> استمع، اضبط، واعزف</span>
   </header>
 
@@ -25,13 +29,6 @@
       <p class="lead">موالف موسيقي يساعدك على ضبط أوتارك بدقة، من أول نغمة حتى آخر وتر.</p>
     </section>
 
-    <nav class="site-navigation" aria-label="التنقل بين أقسام الموقع">
-      <label for="pageNavigation">انتقل إلى القسم</label>
-      <select id="pageNavigation">
-        <option value="tunerPage">موالف الآلات</option>
-        <option value="maqamPage">المقامات والبيانو</option>
-      </select>
-    </nav>
     <div id="tunerPage" class="site-page">
     <section class="workspace" aria-label="موالف الأوتار">
       <div class="panel tuner-panel">
