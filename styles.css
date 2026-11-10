@@ -65,3 +65,55 @@
 .quarter-key.pressed{filter:brightness(1.2);transform:translateX(-50%) translateY(2px);box-shadow:0 1px 4px #0009}
 .piano-key.pressed{filter:brightness(1.14);transform:translateY(2px)}
 @media(max-width:520px){.piano-keyboard{min-width:720px;height:225px}.quarter-key{min-width:25px}}
+
+
+/* Compact, touch-first maqam degree pads */
+.maqam-note-grid{
+  display:grid;
+  grid-template-columns:repeat(8,minmax(0,1fr));
+  gap:9px;
+  direction:rtl;
+  width:100%;
+  margin:8px 0 14px;
+}
+.maqam-note-key{
+  min-width:0;
+  min-height:112px;
+  border:1px solid #49627c;
+  border-radius:14px;
+  padding:12px 5px;
+  background:linear-gradient(160deg,#263c55,#17283d 78%);
+  color:#edf4fb;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:9px;
+  cursor:pointer;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  box-shadow:0 5px 12px #0003,inset 0 1px 0 #ffffff16;
+  transition:transform .12s,filter .12s,background .12s,border-color .12s;
+  font-family:inherit;
+}
+.maqam-note-key .maqam-degree{font-size:10px;color:#b7c8da;white-space:nowrap}
+.maqam-note-key strong{font-size:clamp(13px,1.35vw,18px);line-height:1.35;text-align:center;overflow-wrap:anywhere}
+.maqam-note-key small{min-height:14px;font-size:9px;color:#e3b8f0}
+.maqam-note-key.root-note-key{background:linear-gradient(155deg,#f4d18a,#bd8b3d);border-color:#ffedc4;color:#2c210f;box-shadow:0 5px 14px #d6a64b35}
+.maqam-note-key.root-note-key .maqam-degree,.maqam-note-key.root-note-key small{color:#513812}
+.maqam-note-key.jawab-note-key{border-color:#d8b66f}
+.maqam-note-key.pressed{transform:translateY(3px) scale(.97);filter:brightness(1.28);background:linear-gradient(150deg,#527f9f,#294d6c);box-shadow:inset 0 3px 10px #0005}
+.maqam-note-key.root-note-key.pressed{background:linear-gradient(150deg,#ffe6aa,#d3a14c)}
+.maqam-note-key:focus-visible{outline:3px solid #f0c979;outline-offset:3px}
+@media(max-width:760px){
+ .maqam-note-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+ .maqam-note-key{min-height:100px;border-radius:12px;padding:10px 4px}
+ .maqam-note-key strong{font-size:16px}
+}
+@media(max-width:380px){
+ .maqam-note-grid{gap:6px}
+ .maqam-note-key{min-height:88px}
+ .maqam-note-key .maqam-degree{font-size:9px}
+ .maqam-note-key strong{font-size:14px}
+}
