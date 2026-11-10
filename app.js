@@ -284,21 +284,43 @@
 
 
   function initNavigation(){
-    const links=document.querySelectorAll(".nav-link[data-page]");
-    links.forEach(link=>{
-      link.addEventListener("click",()=>{
-        const target=link.dataset.page;
-        document.querySelectorAll(".site-page").forEach(page=>page.hidden=page.id!==target);
-        links.forEach(item=>{
-          const active=item===link;
-          item.classList.toggle("active",active);
-          if(active)item.setAttribute("aria-current","page");
-          else item.removeAttribute("aria-current");
-        });
-        window.scrollTo({top:0,behavior:"smooth"});
-        if(target==="maqamPage")buildPiano();
+    const nav=document.querySelector(".main-nav");
+    const brand=document.querySelector(".brand");
+    const pages=()=>Array.from(document.querySelectorAll(".site-page"));
+
+    function showPage(target){
+      const destination=document.getElementById(target);
+      if(!destination||!destination.classList.contains("site-page"))return;
+
+      pages().forEach(page=>{page.hidden=page!==destination;});
+      nav.querySelectorAll("[data-page]").forEach(link=>{
+        const active=link.dataset.page===target;
+        link.classList.toggle("active",active);
+        if(active)link.setAttribute("aria-current","page");
+        else link.removeAttribute("aria-current");
       });
+
+      if(target==="maqamPage")buildPiano();
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+
+    // Event delegation keeps links added to the navbar later fully functional.
+    nav.addEventListener("click",event=>{
+      const link=event.target.closest("[data-page]");
+      if(!link||!nav.contains(link))return;
+      showPage(link.dataset.page);
     });
+
+    // The brand always returns to the tuner without reloading the website.
+    brand.addEventListener("click",event=>{
+      if(document.getElementById("tunerPage")){
+        event.preventDefault();
+        showPage("tunerPage");
+      }
+    });
+
+    const initial=pages().find(page=>!page.hidden)||pages()[0];
+    if(initial)showPage(initial.id);
   }
 
   $("instrumentGrid").addEventListener("click",e=>{const b=e.target.closest("[data-instrument]");if(!b)return;state.instrument=b.dataset.instrument;document.querySelectorAll(".instrument").forEach(x=>x.classList.toggle("active",x===b));renderTuning();});
