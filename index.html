@@ -97,8 +97,8 @@
     <section class="maqam-section" id="maqamSection" aria-labelledby="maqamTitle">
       <div class="maqam-heading">
         <span class="section-kicker">03 / عالم المقامات</span>
-        <h2 id="maqamTitle">اختر مقامك واعزفه على البيانو</h2>
-        <p>لوحة بيانو حقيقية داخل الصفحة: اضغط باستمرار على أي مفتاح للعزف، وارفع إصبعك لإيقاف النغمة. ستُضاء درجات المقام المختار.</p>
+        <h2 id="maqamTitle">اختر مقامك واستمع إلى درجاته</h2>
+        <p>تظهر درجات المقام المختار فقط. اضغط على كل مربع لسماع النغمة، من القرار حتى الجواب.</p>
       </div>
       <div class="maqam-layout">
         <div class="maqam-controls">
@@ -115,19 +115,19 @@
           <div class="maqam-legend"><span><i class="legend-root"></i> درجة البداية</span><span><i class="legend-scale"></i> درجات المقام</span><span><i class="legend-quarter"></i> ربع صوت</span></div>
         </div>
         <div class="piano-panel">
-          <div class="piano-topline"><b id="pianoMaqamName">مقام بيات</b><span>اضغط على المفاتيح للعزف</span></div>
-          <div class="piano-scroll"><div id="pianoKeyboard" class="piano-keyboard" aria-label="لوحة بيانو تفاعلية من أوكتافين"></div></div>
+          <div class="piano-topline"><b id="pianoMaqamName">مقام بيات</b><span>اضغط على المربعات لسماع الدرجات</span></div>
+          <div id="pianoKeyboard" class="maqam-note-grid" aria-label="درجات المقام التفاعلية"></div>
           <div class="piano-actions"><button type="button" id="playScale" class="primary-button">▶ استمع إلى المقام</button><button type="button" id="stopScale" class="secondary-button" disabled>إيقاف</button></div>
-          <p id="pianoNowPlaying" class="piano-now-playing" aria-live="polite">اختر مفتاحاً أو اعزف المقام كاملاً.</p>
+          <p id="pianoNowPlaying" class="piano-now-playing" aria-live="polite">اضغط على أي مربع لسماع درجته.</p>
         </div>
       </div>
       <div class="scale-details">
-        <h3>أبعاد المقام ودرجاته</h3>
-        <p class="scale-hint">الأبعاد هي المسافات الصوتية بين كل درجة والتي تليها. يمكنك استخدامها لنقل المقام إلى أي طبقة.</p>
+        <h3>درجات المقام وأبعادها</h3>
+        <p class="scale-hint">الأبعاد هي المسافات الصوتية بين كل درجة والتي تليها. يمكنك استخدامها لفهم المسافات بين درجات المقام ونقله إلى طبقات مختلفة.</p>
         <div id="scaleNotes" class="scale-notes"></div>
         <div id="scaleIntervals" class="scale-intervals"></div>
       </div>
-      <p class="maqam-disclaimer">تنبيه موسيقي: هذه صيغ صاعدة تعليمية لتوضيح الدرجات. قد تختلف بعض تفاصيل المقامات وأجناسها ومساراتها الصاعدة والهابطة باختلاف المدرسة الموسيقية. أرباع الصوت موضحة بين مفاتيح البيانو، ويمكن سماعها بالتردد الدقيق عند الضغط على علامتها.</p>
+      <p class="maqam-disclaimer">تنبيه موسيقي: هذه صيغ صاعدة تعليمية لتوضيح الدرجات. قد تختلف بعض تفاصيل المقامات وأجناسها ومساراتها الصاعدة والهابطة باختلاف المدرسة الموسيقية. كل مربع يصدر التردد الدقيق لدرجته، بما في ذلك أرباع الصوت.</p>
     </section>
 
 
