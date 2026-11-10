@@ -173,7 +173,7 @@
     const root=selected===""?m.root:Number(selected);
     return {...m,root,notes:m.steps.map(q=>root+q/2)};
   }
-  const heldPianoNotes=new Map();
+  const heldPianoNotes=new Map();\n  const releasedPianoKeys=new Set();
   function stopHeldPianoNote(key){
     const held=heldPianoNotes.get(key);if(!held)return;
     const now=held.context.currentTime;
@@ -203,13 +203,13 @@
     keyboard.className="maqam-note-grid";
     keyboard.setAttribute("aria-label","درجات مقام "+data.name);
     data.steps.forEach((q,i)=>{
-      const midi=data.root+q/2,label=noteName(midi),isRoot=i===0,isJawab=i===data.steps.length-1;
+      const midi=data.root+q/2,label=noteName(midi),isRoot=i===0,isLast=i===data.steps.length-1,isJawab=isLast&&Math.abs(q-24)<.001;
       const key=document.createElement("button");
       key.type="button";
       key.className="maqam-note-key"+(isRoot?" root-note-key":"")+(isJawab?" jawab-note-key":"");
       key.setAttribute("aria-label","الدرجة "+(i+1)+": "+label+"، اضغط لسماع النغمة");
       key.innerHTML='<span class="maqam-degree"></span><strong class="maqam-note-label"></strong><small class="maqam-note-kind"></small>';
-      key.querySelector(".maqam-degree").textContent=isRoot?"القرار":isJawab?"الجواب":"الدرجة "+(i+1);
+      key.querySelector(".maqam-degree").textContent=isRoot?"القرار":isJawab?"الجواب":isLast?"القفلة":"الدرجة "+(i+1);
       key.querySelector(".maqam-note-label").textContent=label;
       key.querySelector(".maqam-note-kind").textContent=(Math.abs((midi%1)-.5)<.001)?"ربع صوت":"";
       const token="maqam-tile-"+i;
