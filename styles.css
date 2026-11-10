@@ -307,3 +307,22 @@ footer{margin-top:18px}
   html{scroll-behavior:auto}
   *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
 }
+
+
+/* Keep the navigation usable as more sections are added. */
+.main-nav{
+  max-width:min(62vw,760px);
+  flex-wrap:wrap;
+}
+@media(max-width:760px){
+  .main-nav{
+    max-width:none;
+    flex-wrap:nowrap;
+    justify-content:flex-start;
+    overflow-x:auto;
+    overscroll-behavior-inline:contain;
+    scrollbar-width:thin;
+    scrollbar-color:#52647b transparent;
+  }
+  .nav-link{flex:0 0 auto;min-width:max-content}
+}
