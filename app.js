@@ -180,8 +180,8 @@
     $("maqamDescription").textContent=data.desc;
     const noteSet=new Map();
     data.steps.slice(0,-1).forEach((q,i)=>{
-      const semitones=q/2,rounded=Math.round(semitones);
-      if(Math.abs(semitones-rounded)<.001)noteSet.set(((rounded%12)+12)%12,{degree:i+1,q,root:i===0});
+      const pitchClass=((data.root+q/2)%12+12)%12,rounded=Math.round(pitchClass);
+      if(Math.abs(pitchClass-rounded)<.001)noteSet.set(((rounded%12)+12)%12,{degree:i+1,q,root:i===0});
     });
     const whitePositions=[0,2,4,5,7,9,11];
     const blackPositions=[1,3,6,8,10];
@@ -193,20 +193,20 @@
       if(isBlack){const before=whitePositions.filter(n=>n<i).length;key.style.left=((before-.32)/7*100)+"%";}
       else{const pos=whitePositions.indexOf(i);key.style.left=(pos/7*100)+"%";}
       key.textContent=match?(match.root?"1":String(match.degree)):"";
-      key.setAttribute("aria-label",noteName(data.root+i)+" "+(match?"درجة في المقام":""));
-      key.title=noteName(data.root+i)+(match?" · الدرجة "+match.degree:"");
-      key.addEventListener("click",()=>playPianoNote(data.root+i,noteName(data.root+i)));
+      key.setAttribute("aria-label",noteName(60+i)+" "+(match?"درجة في المقام":""));
+      key.title=noteName(60+i)+(match?" · الدرجة "+match.degree:"");
+      key.addEventListener("click",()=>playPianoNote(60+i,noteName(60+i)));
       keyboard.append(key);
     }
     data.steps.slice(0,-1).forEach((q,i)=>{
       if(q%2===0)return;
-      const semitones=q/2,position=pianoPosition(semitones);
+      const midi=data.root+q/2,pitchClass=((midi%12)+12)%12,position=pianoPosition(pitchClass);
       const marker=document.createElement("div");marker.className="quarter-marker"+(i===0?" root-marker":"");marker.style.left=(position/7*100)+"%";
       const button=document.createElement("button");button.type="button";button.textContent=String(i+1)+"¼";
-      button.title=noteName(data.root+semitones)+" · درجة ربع صوت · اضغط للسماع";
-      button.setAttribute("aria-label","عزف "+noteName(data.root+semitones));
-      button.addEventListener("click",()=>playPianoNote(data.root+semitones,noteName(data.root+semitones)));
-      const label=document.createElement("span");label.textContent=noteName(data.root+semitones);
+      button.title=noteName(midi)+" · درجة ربع صوت · اضغط للسماع";
+      button.setAttribute("aria-label","عزف "+noteName(midi));
+      button.addEventListener("click",()=>playPianoNote(midi,noteName(midi)));
+      const label=document.createElement("span");label.textContent=noteName(midi);
       marker.append(button,label);keyboard.append(marker);
     });
     renderScaleDetails(data);
