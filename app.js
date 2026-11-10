@@ -173,39 +173,82 @@
     const root=selected===""?m.root:Number(selected);
     return {...m,root,notes:m.steps.map(q=>root+q/2)};
   }
+  const heldPianoNotes=new Map();
+  function stopHeldPianoNote(key){
+    const held=heldPianoNotes.get(key);if(!held)return;
+    const now=held.context.currentTime;
+    held.gain.gain.cancelScheduledValues(now);held.gain.gain.setTargetAtTime(.0001,now,.035);
+    try{held.osc.stop(now+.18);}catch(e){}
+    heldPianoNotes.delete(key);
+  }
+  async function startHeldPianoNote(midi,label,key){
+    try{
+      if(heldPianoNotes.has(key))return;
+      if(!pianoState.context)pianoState.context=new (window.AudioContext||window.webkitAudioContext)();
+      const ctx=pianoState.context;if(ctx.state==="suspended")await ctx.resume();
+      if(heldPianoNotes.has(key))return;
+      const osc=ctx.createOscillator(),gain=ctx.createGain(),now=ctx.currentTime;
+      osc.type="triangle";osc.frequency.value=A4*Math.pow(2,(midi-69)/12);
+      gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.16,now+.025);
+      osc.connect(gain);gain.connect(ctx.destination);osc.start(now);
+      heldPianoNotes.set(key,{osc,gain,context:ctx});
+      $("pianoNowPlaying").textContent="تعزف الآن: "+label+" · "+(A4*Math.pow(2,(midi-69)/12)).toFixed(2)+" Hz";
+    }catch(error){$("pianoNowPlaying").textContent="تعذر تشغيل الصوت. تحقق من إعدادات الصوت.";}
+  }
   function buildPiano(){
     const data=getMaqamData(),keyboard=$("pianoKeyboard");
     keyboard.innerHTML="";
     $("pianoMaqamName").textContent="مقام "+data.name+" · "+noteName(data.root);
     $("maqamDescription").textContent=data.desc;
-    const noteSet=new Map();
-    data.steps.slice(0,-1).forEach((q,i)=>{
-      const pitchClass=((data.root+q/2)%12+12)%12,rounded=Math.round(pitchClass);
-      if(Math.abs(pitchClass-rounded)<.001)noteSet.set(((rounded%12)+12)%12,{degree:i+1,q,root:i===0});
-    });
-    const whitePositions=[0,2,4,5,7,9,11];
-    const blackPositions=[1,3,6,8,10];
-    for(let i=0;i<12;i++){
-      const isBlack=blackPositions.includes(i);
-      const key=document.createElement("button");key.type="button";key.className="piano-key "+(isBlack?"black":"white");
-      const match=noteSet.get(i);
-      if(match){key.classList.add("active");if(match.root)key.classList.add("root");}
-      if(isBlack){const before=whitePositions.filter(n=>n<i).length;key.style.left=((before-.32)/7*100)+"%";}
-      else{const pos=whitePositions.indexOf(i);key.style.left=(pos/7*100)+"%";}
-      key.textContent=match?(match.root?"1":String(match.degree)):"";
-      key.setAttribute("aria-label",noteName(60+i)+" "+(match?"درجة في المقام":""));
-      key.title=noteName(60+i)+(match?" · الدرجة "+match.degree:"");
-      key.addEventListener("click",()=>{let target=60+i;while(target<data.root)target+=12;while(target>=data.root+12)target-=12;playPianoNote(target,noteName(target));});
-      keyboard.append(key);
+    const whitePcs=[0,2,4,5,7,9,11],blackPcs=[1,3,6,8,10],whiteCount=15;
+    keyboard.style.setProperty("--white-count",whiteCount);
+    const scalePcs=data.steps.slice(0,-1).map(q=>((data.root+q/2)%12+12)%12);
+    for(let octave=0;octave<2;octave++){
+      whitePcs.forEach((pc,index)=>{
+        const midi=60+octave*12+pc,absoluteIndex=octave*7+index;
+        const match=scalePcs.some(p=>Math.abs(p-pc)<.001);
+        const root=Math.abs(((data.root%12)+12)%12-pc)<.001;
+        const key=document.createElement("button");key.type="button";
+        key.className="piano-key white"+(match?" active":"")+(root?" root":"");
+        key.style.left=(absoluteIndex/whiteCount*100)+"%";key.style.width=(100/whiteCount)+"%";
+        key.textContent=root?"1":(match?String(data.steps.findIndex(q=>Math.abs((((data.root+q/2)%12+12)%12)-pc)<.001)+1):"");
+        key.setAttribute("aria-label",noteName(midi));key.title=noteName(midi);
+        const token="white-"+midi;
+        key.addEventListener("pointerdown",e=>{e.preventDefault();key.setPointerCapture(e.pointerId);startHeldPianoNote(midi,noteName(midi),token);key.classList.add("pressed");});
+        const release=()=>{stopHeldPianoNote(token);key.classList.remove("pressed");};
+        key.addEventListener("pointerup",release);key.addEventListener("pointercancel",release);key.addEventListener("lostpointercapture",release);
+        key.addEventListener("contextmenu",e=>e.preventDefault());keyboard.append(key);
+      });
+    }
+    for(let octave=0;octave<2;octave++){
+      blackPcs.forEach(pc=>{
+        const before=whitePcs.filter(n=>n<pc).length,absoluteIndex=octave*7+before;
+        const midi=60+octave*12+pc,match=scalePcs.some(p=>Math.abs(p-pc)<.001);
+        const key=document.createElement("button");key.type="button";
+        key.className="piano-key black"+(match?" active":"");
+        key.style.left=((absoluteIndex+.68)/whiteCount*100)+"%";key.style.width=(.64/whiteCount*100)+"%";
+        key.setAttribute("aria-label",noteName(midi));key.title=noteName(midi);
+        const token="black-"+midi;
+        key.addEventListener("pointerdown",e=>{e.preventDefault();key.setPointerCapture(e.pointerId);startHeldPianoNote(midi,noteName(midi),token);key.classList.add("pressed");});
+        const release=()=>{stopHeldPianoNote(token);key.classList.remove("pressed");};
+        key.addEventListener("pointerup",release);key.addEventListener("pointercancel",release);key.addEventListener("lostpointercapture",release);
+        key.addEventListener("contextmenu",e=>e.preventDefault());keyboard.append(key);
+      });
     }
     data.steps.slice(0,-1).forEach((q,i)=>{
-      if(q%2===0)return;
-      const midi=data.root+q/2,pitchClass=((midi%12)+12)%12,position=pianoPosition(pitchClass);
-      const marker=document.createElement("div");marker.className="quarter-marker"+(i===0?" root-marker":"");marker.style.left=(position/7*100)+"%";
+      const midi=data.root+q/2,pitch=((midi%12)+12)%12;
+      if(Math.abs(pitch-Math.round(pitch))<.001)return;
+      const semitone=Math.floor(pitch),octave=Math.floor((data.root+q/2-60)/12);
+      const whiteBefore=whitePcs.filter(n=>n<=semitone).length;
+      const whiteIndex=octave*7+Math.max(0,whiteBefore-1);
+      const marker=document.createElement("div");marker.className="quarter-marker"+(i===0?" root-marker":"");
+      marker.style.left=((whiteIndex+.5)/whiteCount*100)+"%";
       const button=document.createElement("button");button.type="button";button.textContent=String(i+1)+"¼";
-      button.title=noteName(midi)+" · درجة ربع صوت · اضغط للسماع";
-      button.setAttribute("aria-label","عزف "+noteName(midi));
-      button.addEventListener("click",()=>playPianoNote(midi,noteName(midi)));
+      button.title=noteName(midi)+" · ربع صوت · اضغط باستمرار للعزف";
+      const token="quarter-"+i;
+      button.addEventListener("pointerdown",e=>{e.preventDefault();button.setPointerCapture(e.pointerId);startHeldPianoNote(midi,noteName(midi),token);button.classList.add("pressed");});
+      const release=()=>{stopHeldPianoNote(token);button.classList.remove("pressed");};
+      button.addEventListener("pointerup",release);button.addEventListener("pointercancel",release);button.addEventListener("lostpointercapture",release);
       const label=document.createElement("span");label.textContent=noteName(midi);
       marker.append(button,label);keyboard.append(marker);
     });
@@ -240,6 +283,7 @@
   function stopScalePlayback(){
     if(pianoState.sequenceTimer){clearTimeout(pianoState.sequenceTimer);pianoState.sequenceTimer=null;}
     pianoState.oscillators.forEach(osc=>{try{osc.stop();}catch(e){}});
+    [...heldPianoNotes.keys()].forEach(stopHeldPianoNote);
     pianoState.oscillators=[];$("playScale").disabled=false;$("stopScale").disabled=true;
     $("pianoNowPlaying").textContent="تم إيقاف العزف.";
   }
@@ -260,9 +304,20 @@
     updateRootDefault();buildPiano();
   }
 
+
+  function initNavigation(){
+    const nav=$("pageNavigation");
+    nav.addEventListener("change",()=>{
+      document.querySelectorAll(".site-page").forEach(page=>page.hidden=page.id!==nav.value);
+      window.scrollTo({top:0,behavior:"smooth"});
+      if(nav.value==="maqamPage")buildPiano();
+    });
+  }
+
   $("instrumentGrid").addEventListener("click",e=>{const b=e.target.closest("[data-instrument]");if(!b)return;state.instrument=b.dataset.instrument;document.querySelectorAll(".instrument").forEach(x=>x.classList.toggle("active",x===b));renderTuning();});
   $("tuningSelect").addEventListener("change",e=>{state.tuningIndex=Number(e.target.value);state.stringIndex=0;$("tuningNote").textContent=currentTuning().note;renderStrings();});
   $("startButton").addEventListener("click",start);$("stopButton").addEventListener("click",stop);$("playReference").addEventListener("click",playReference);
   renderTuning();
   initMaqam();
+  initNavigation();
 })();
