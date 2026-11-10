@@ -200,7 +200,7 @@
     keyboard.innerHTML="";
     $("pianoMaqamName").textContent="مقام "+data.name+" · "+noteName(data.root);
     $("maqamDescription").textContent=data.desc;
-    const whitePcs=[0,2,4,5,7,9,11],blackPcs=[1,3,6,8,10],whiteCount=15;
+    const whitePcs=[0,2,4,5,7,9,11],blackPcs=[1,3,6,8,10],whiteCount=14;
     keyboard.style.setProperty("--white-count",whiteCount);
     const scalePcs=data.steps.slice(0,-1).map(q=>((data.root+q/2)%12+12)%12);
     for(let octave=0;octave<2;octave++){
