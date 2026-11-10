@@ -21,3 +21,25 @@
 .maqam-disclaimer{color:var(--muted);font-size:10px;line-height:1.9;margin:15px 2px 0}
 @media(max-width:760px){.maqam-layout{grid-template-columns:1fr}.maqam-section{padding:18px 13px}.piano-keyboard{height:150px}.piano-topline{align-items:flex-start;flex-direction:column;gap:3px}}
 @media(max-width:420px){.piano-keyboard{height:130px}.piano-key{font-size:9px}.quarter-marker span{font-size:8px}.scale-note{min-width:65px;padding:8px 7px}}
+
+
+/* Dropdown navigation and full playable piano */
+.site-navigation{display:flex;align-items:center;justify-content:center;gap:12px;margin:0 auto 24px;padding:14px 18px;max-width:520px;border:1px solid var(--line);border-radius:14px;background:#111c2d}
+.site-navigation label{font-size:12px;color:var(--muted);white-space:nowrap}
+.site-navigation select{flex:1;max-width:310px;background:#0b1727;color:var(--text);border:1px solid #655337;border-radius:9px;padding:11px 14px;font:inherit}
+.site-page[hidden]{display:none!important}
+.tuner-disclaimer{display:none}
+.maqam-section{margin-top:0}
+.piano-scroll{width:100%;overflow-x:auto;padding:4px 2px 13px;direction:ltr}
+.piano-keyboard{height:230px;position:relative;direction:ltr;user-select:none;touch-action:pan-x;margin:0 auto 12px;min-width:680px;width:100%;max-width:100%;padding:0}
+.piano-key.white{height:100%;width:auto;background:linear-gradient(180deg,#fff 0%,#f1eee6 90%,#d9d5cb 100%);color:#263247;border:1px solid #aab2bf;z-index:1;border-radius:0 0 7px 7px}
+.piano-key.white.active{background:linear-gradient(180deg,#d2f0df,#82b99a);border-color:#e7b86a;color:#142136}
+.piano-key.white.root{background:linear-gradient(180deg,#ffe3a7,#d7a84f);color:#20190f;border:2px solid #fff0c7}
+.piano-key.black{height:62%;width:auto;background:linear-gradient(180deg,#46546a,#182336 80%);color:#e8edf5;border:1px solid #536176;z-index:2;box-shadow:0 5px 8px #0008;padding-bottom:7px;font-size:9px;border-radius:0 0 5px 5px}
+.piano-key.black.active{background:linear-gradient(180deg,#91b8d2,#345b78);border-color:#c3e1f7}
+.piano-key.pressed,.quarter-marker button.pressed{filter:brightness(1.35);transform:translateY(2px)}
+.quarter-marker{z-index:4}
+.quarter-marker button{width:30px;height:30px;left:-15px;border-radius:50%;font-size:10px}
+.piano-actions{margin-top:12px}
+.piano-now-playing{font-variant-numeric:tabular-nums}
+@media(max-width:520px){.site-navigation{margin:0 0 18px;padding:11px}.site-navigation label{font-size:11px}.piano-keyboard{min-width:680px;height:210px}}
