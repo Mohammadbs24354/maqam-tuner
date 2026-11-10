@@ -173,9 +173,10 @@
     const root=selected===""?m.root:Number(selected);
     return {...m,root,notes:m.steps.map(q=>root+q/2)};
   }
-  const heldPianoNotes=new Map();\n  const releasedPianoKeys=new Set();
+  const heldPianoNotes=new Map();
+  const releasedPianoKeys=new Set();
   function stopHeldPianoNote(key){
-    const held=heldPianoNotes.get(key);if(!held)return;
+    const held=heldPianoNotes.get(key);if(!held){releasedPianoKeys.add(key);return;}
     const now=held.context.currentTime;
     held.gain.gain.cancelScheduledValues(now);held.gain.gain.setTargetAtTime(.0001,now,.035);
     try{held.osc.stop(now+.18);}catch(e){}
@@ -183,9 +184,11 @@
   }
   async function startHeldPianoNote(midi,label,key){
     try{
+      releasedPianoKeys.delete(key);
       if(heldPianoNotes.has(key))return;
       if(!pianoState.context)pianoState.context=new (window.AudioContext||window.webkitAudioContext)();
       const ctx=pianoState.context;if(ctx.state==="suspended")await ctx.resume();
+      if(releasedPianoKeys.has(key)){releasedPianoKeys.delete(key);return;}
       if(heldPianoNotes.has(key))return;
       const osc=ctx.createOscillator(),gain=ctx.createGain(),now=ctx.currentTime;
       osc.type="triangle";osc.frequency.value=A4*Math.pow(2,(midi-69)/12);
@@ -206,7 +209,7 @@
       const midi=data.root+q/2,label=noteName(midi),isRoot=i===0,isLast=i===data.steps.length-1,isJawab=isLast&&Math.abs(q-24)<.001;
       const key=document.createElement("button");
       key.type="button";
-      key.className="maqam-note-key"+(isRoot?" root-note-key":"")+(isJawab?" jawab-note-key":"");
+      key.className="maqam-note-key"+(isRoot?" root-note-key":"")+(isJawab?" jawab-note-key":(isLast?" ending-note-key":""));
       key.setAttribute("aria-label","الدرجة "+(i+1)+": "+label+"، اضغط لسماع النغمة");
       key.innerHTML='<span class="maqam-degree"></span><strong class="maqam-note-label"></strong><small class="maqam-note-kind"></small>';
       key.querySelector(".maqam-degree").textContent=isRoot?"القرار":isJawab?"الجواب":isLast?"القفلة":"الدرجة "+(i+1);
