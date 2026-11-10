@@ -25,6 +25,14 @@
       <p class="lead">موالف موسيقي يساعدك على ضبط أوتارك بدقة، من أول نغمة حتى آخر وتر.</p>
     </section>
 
+    <nav class="site-navigation" aria-label="التنقل بين أقسام الموقع">
+      <label for="pageNavigation">انتقل إلى القسم</label>
+      <select id="pageNavigation">
+        <option value="tunerPage">موالف الآلات</option>
+        <option value="maqamPage">المقامات والبيانو</option>
+      </select>
+    </nav>
+    <div id="tunerPage" class="site-page">
     <section class="workspace" aria-label="موالف الأوتار">
       <div class="panel tuner-panel">
         <div class="panel-head">
@@ -76,11 +84,21 @@
     </section>
 
 
+
+    <section class="info-grid">
+      <article class="info-card"><span class="info-number">01</span><h3>اختر آلتك ونمطها</h3><p>تختلف الأوتار والتقاليد الموسيقية؛ اختر أقرب ضبط شائع لآلتك.</p></article>
+      <article class="info-card"><span class="info-number">02</span><h3>اعزف وتراً واحداً</h3><p>اقترب من الميكروفون واعزف نغمة ثابتة دون ضوضاء محيطة قدر الإمكان.</p></article>
+      <article class="info-card"><span class="info-number">03</span><h3>راقب المؤشر</h3><p>حرّك شدّ الوتر تدريجياً حتى يصبح الانحراف قريباً من صفر سنت.</p></article>
+    </section>
+
+
+    </div>
+    <div id="maqamPage" class="site-page" hidden>
     <section class="maqam-section" id="maqamSection" aria-labelledby="maqamTitle">
       <div class="maqam-heading">
         <span class="section-kicker">03 / عالم المقامات</span>
         <h2 id="maqamTitle">اختر مقامك واعزفه على البيانو</h2>
-        <p>اختر المقام وطبقة البداية. ستضيء درجاته على لوحة المفاتيح، ويمكنك الضغط على أي مفتاح لسماع النغمة.</p>
+        <p>لوحة بيانو حقيقية داخل الصفحة: اضغط باستمرار على أي مفتاح للعزف، وارفع إصبعك لإيقاف النغمة. ستُضاء درجات المقام المختار.</p>
       </div>
       <div class="maqam-layout">
         <div class="maqam-controls">
@@ -98,8 +116,8 @@
         </div>
         <div class="piano-panel">
           <div class="piano-topline"><b id="pianoMaqamName">مقام بيات</b><span>اضغط على المفاتيح للعزف</span></div>
-          <div id="pianoKeyboard" class="piano-keyboard" aria-label="لوحة بيانو تفاعلية"></div>
-          <div class="piano-actions"><button type="button" id="playScale" class="primary-button">▶ عزف المقام كاملاً</button><button type="button" id="stopScale" class="secondary-button" disabled>إيقاف</button></div>
+          <div class="piano-scroll"><div id="pianoKeyboard" class="piano-keyboard" aria-label="لوحة بيانو تفاعلية من أوكتافين"></div></div>
+          <div class="piano-actions"><button type="button" id="playScale" class="primary-button">▶ استمع إلى المقام</button><button type="button" id="stopScale" class="secondary-button" disabled>إيقاف</button></div>
           <p id="pianoNowPlaying" class="piano-now-playing" aria-live="polite">اختر مفتاحاً أو اعزف المقام كاملاً.</p>
         </div>
       </div>
@@ -112,13 +130,9 @@
       <p class="maqam-disclaimer">تنبيه موسيقي: هذه صيغ صاعدة تعليمية لتوضيح الدرجات. قد تختلف بعض تفاصيل المقامات وأجناسها ومساراتها الصاعدة والهابطة باختلاف المدرسة الموسيقية. أرباع الصوت موضحة بين مفاتيح البيانو، ويمكن سماعها بالتردد الدقيق عند الضغط على علامتها.</p>
     </section>
 
-    <section class="info-grid">
-      <article class="info-card"><span class="info-number">01</span><h3>اختر آلتك ونمطها</h3><p>تختلف الأوتار والتقاليد الموسيقية؛ اختر أقرب ضبط شائع لآلتك.</p></article>
-      <article class="info-card"><span class="info-number">02</span><h3>اعزف وتراً واحداً</h3><p>اقترب من الميكروفون واعزف نغمة ثابتة دون ضوضاء محيطة قدر الإمكان.</p></article>
-      <article class="info-card"><span class="info-number">03</span><h3>راقب المؤشر</h3><p>حرّك شدّ الوتر تدريجياً حتى يصبح الانحراف قريباً من صفر سنت.</p></article>
-    </section>
 
-    <section class="disclaimer"><b>ملاحظة حول الضبط الشرقي</b><p>العود والبزق والكمان الشرقي لها مدارس وتقاليد متعددة، وقد يختلف عدد الأوتار والتردد المرجعي بحسب المنطقة والعازف. الأنماط المعروضة نقطة بداية شائعة وليست معياراً موحداً؛ استخدم الإعداد المخصص وعدّل الترددات وفق مرجع أستاذك أو فرقتك.</p></section>
+    </div>
+    <section class="disclaimer tuner-disclaimer"><b>ملاحظة حول الضبط الشرقي</b><p>العود والبزق والكمان الشرقي لها مدارس وتقاليد متعددة، وقد يختلف عدد الأوتار والتردد المرجعي بحسب المنطقة والعازف. الأنماط المعروضة نقطة بداية شائعة وليست معياراً موحداً؛ استخدم الإعداد المخصص وعدّل الترددات وفق مرجع أستاذك أو فرقتك.</p></section>
   </main>
 
   <footer><span>مقام · MAQAM TUNER</span><span>صُنع للموسيقى العربية والعالمية</span></footer>
