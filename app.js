@@ -200,61 +200,34 @@
     keyboard.innerHTML="";
     $("pianoMaqamName").textContent="مقام "+data.name+" · "+noteName(data.root);
     $("maqamDescription").textContent=data.desc;
-    const whitePcs=[0,2,4,5,7,9,11],blackPcs=[1,3,6,8,10],whiteCount=14;
-    keyboard.style.setProperty("--white-count",whiteCount);
-    const scalePcs=data.steps.slice(0,-1).map(q=>((data.root+q/2)%12+12)%12);
-    for(let octave=0;octave<2;octave++){
-      whitePcs.forEach((pc,index)=>{
-        const midi=60+octave*12+pc,absoluteIndex=octave*7+index;
-        const match=scalePcs.some(p=>Math.abs(p-pc)<.001);
-        const root=Math.abs(((data.root%12)+12)%12-pc)<.001;
-        const key=document.createElement("button");key.type="button";
-        key.className="piano-key white"+(match?" active":"")+(root?" root":"");
-        key.style.left=(absoluteIndex/whiteCount*100)+"%";key.style.width=(100/whiteCount)+"%";
-        key.textContent=root?"1":(match?String(data.steps.findIndex(q=>Math.abs((((data.root+q/2)%12+12)%12)-pc)<.001)+1):"");
-        key.setAttribute("aria-label",noteName(midi));key.title=noteName(midi);
-        const token="white-"+midi;
-        key.addEventListener("pointerdown",e=>{e.preventDefault();key.setPointerCapture(e.pointerId);startHeldPianoNote(midi,noteName(midi),token);key.classList.add("pressed");});
-        const release=()=>{stopHeldPianoNote(token);key.classList.remove("pressed");};
-        key.addEventListener("pointerup",release);key.addEventListener("pointercancel",release);key.addEventListener("lostpointercapture",release);
-        key.addEventListener("contextmenu",e=>e.preventDefault());keyboard.append(key);
+    keyboard.className="maqam-note-grid";
+    keyboard.setAttribute("aria-label","درجات مقام "+data.name);
+    data.steps.forEach((q,i)=>{
+      const midi=data.root+q/2,label=noteName(midi),isRoot=i===0,isJawab=i===data.steps.length-1;
+      const key=document.createElement("button");
+      key.type="button";
+      key.className="maqam-note-key"+(isRoot?" root-note-key":"")+(isJawab?" jawab-note-key":"");
+      key.setAttribute("aria-label","الدرجة "+(i+1)+": "+label+"، اضغط لسماع النغمة");
+      key.innerHTML='<span class="maqam-degree"></span><strong class="maqam-note-label"></strong><small class="maqam-note-kind"></small>';
+      key.querySelector(".maqam-degree").textContent=isRoot?"القرار":isJawab?"الجواب":"الدرجة "+(i+1);
+      key.querySelector(".maqam-note-label").textContent=label;
+      key.querySelector(".maqam-note-kind").textContent=(Math.abs((midi%1)-.5)<.001)?"ربع صوت":"";
+      const token="maqam-tile-"+i;
+      key.addEventListener("pointerdown",e=>{
+        e.preventDefault();
+        try{key.setPointerCapture(e.pointerId);}catch(error){}
+        key.classList.add("pressed");
+        startHeldPianoNote(midi,label,token);
       });
-    }
-    for(let octave=0;octave<2;octave++){
-      blackPcs.forEach(pc=>{
-        const before=whitePcs.filter(n=>n<pc).length,absoluteIndex=octave*7+before;
-        const midi=60+octave*12+pc,match=scalePcs.some(p=>Math.abs(p-pc)<.001);
-        const key=document.createElement("button");key.type="button";
-        key.className="piano-key black"+(match?" active":"");
-        key.style.left=((absoluteIndex+.68)/whiteCount*100)+"%";key.style.width=(.64/whiteCount*100)+"%";
-        key.setAttribute("aria-label",noteName(midi));key.title=noteName(midi);
-        const token="black-"+midi;
-        key.addEventListener("pointerdown",e=>{e.preventDefault();key.setPointerCapture(e.pointerId);startHeldPianoNote(midi,noteName(midi),token);key.classList.add("pressed");});
-        const release=()=>{stopHeldPianoNote(token);key.classList.remove("pressed");};
-        key.addEventListener("pointerup",release);key.addEventListener("pointercancel",release);key.addEventListener("lostpointercapture",release);
-        key.addEventListener("contextmenu",e=>e.preventDefault());keyboard.append(key);
-      });
-    }
-    data.steps.slice(0,-1).forEach((q,i)=>{
-      const midi=data.root+q/2,pitch=((midi%12)+12)%12;
-      if(Math.abs(pitch-Math.round(pitch))<.001)return;
-      const relativePitch=midi-60,octave=Math.floor(relativePitch/12),withinOctave=((relativePitch%12)+12)%12;
-      const marker=document.createElement("button");
-      marker.type="button";
-      marker.className="quarter-key"+(i===0?" root-quarter-key":"");
-      marker.style.left=((octave*7+pianoPosition(withinOctave))/whiteCount*100)+"%";
-      marker.setAttribute("aria-label",noteName(midi)+"، نغمة ربع صوت، اضغط باستمرار للعزف");
-      marker.title=noteName(midi)+" · نغمة شرقية بين مفاتيح البيانو · اضغط باستمرار للعزف";
-      const note=document.createElement("span");note.textContent=noteName(midi);
-      const symbol=document.createElement("small");symbol.textContent="¼";
-      marker.append(note,symbol);
-      const token="quarter-"+i;
-      marker.addEventListener("pointerdown",e=>{e.preventDefault();marker.setPointerCapture(e.pointerId);startHeldPianoNote(midi,noteName(midi),token);marker.classList.add("pressed");});
-      const release=()=>{stopHeldPianoNote(token);marker.classList.remove("pressed");};
-      marker.addEventListener("pointerup",release);marker.addEventListener("pointercancel",release);marker.addEventListener("lostpointercapture",release);
-      marker.addEventListener("contextmenu",e=>e.preventDefault());keyboard.append(marker);
+      const release=()=>{stopHeldPianoNote(token);key.classList.remove("pressed");};
+      key.addEventListener("pointerup",release);
+      key.addEventListener("pointercancel",release);
+      key.addEventListener("lostpointercapture",release);
+      key.addEventListener("contextmenu",e=>e.preventDefault());
+      keyboard.append(key);
     });
     renderScaleDetails(data);
+    $("pianoNowPlaying").textContent="اضغط على أي مربع لسماع درجته، أو استمع إلى المقام كاملاً.";
   }
   function renderScaleDetails(data){
     const notes=$("scaleNotes"),intervals=$("scaleIntervals");notes.innerHTML="";intervals.innerHTML="";
