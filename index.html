@@ -135,25 +135,62 @@
       <section class="drums-section" aria-labelledby="drumsTitle">
         <div class="drums-heading">
           <span class="section-kicker">04 / الإيقاع</span>
-          <h2 id="drumsTitle">لوحة الدرامز</h2>
-          <p>اضغط على أي خانة لتشغيل صوتها الإيقاعي. يمكنك العزف بإصبعك أو باستخدام لوحة المفاتيح.</p>
+          <h2 id="drumsTitle">استوديو الإيقاعات</h2>
+          <p>اعزف بنفسك أو شغّل إيقاعاً جاهزاً وتحكّم بسرعته واعزف معه.</p>
         </div>
-        <div class="drum-machine">
-          <div class="drum-machine-top">
-            <div><span class="drum-live-dot"></span><b>لوحة العزف المباشر</b></div>
-            <span class="drum-hint">6 أصوات إيقاعية</span>
-          </div>
-          <div id="drumPads" class="drum-pads" aria-label="خانات الدرامز الست">
-            <button type="button" class="drum-pad drum-dum" data-drum="dum" aria-label="تشغيل دم، الاختصار 1"><span class="drum-key-number">1</span><span class="drum-pad-symbol">◉</span><strong>دُم</strong><small>صوت الطبلة العميق</small></button>
-            <button type="button" class="drum-pad drum-tak" data-drum="tak" aria-label="تشغيل تك، الاختصار 2"><span class="drum-key-number">2</span><span class="drum-pad-symbol">✦</span><strong>تَك</strong><small>ضربة حادة قصيرة</small></button>
-            <button type="button" class="drum-pad drum-daf" data-drum="daf" aria-label="تشغيل دف، الاختصار 3"><span class="drum-key-number">3</span><span class="drum-pad-symbol">◌</span><strong>دَف</strong><small>صوت الدف</small></button>
-            <button type="button" class="drum-pad drum-riq" data-drum="riq" aria-label="تشغيل رق، الاختصار 4"><span class="drum-key-number">4</span><span class="drum-pad-symbol">✧</span><strong>رَق</strong><small>رنين الرق</small></button>
-            <button type="button" class="drum-pad drum-clap" data-drum="clap" aria-label="تشغيل تصفيق، الاختصار 5"><span class="drum-key-number">5</span><span class="drum-pad-symbol">✋</span><strong>تصفيق</strong><small>ضربة تصفيق</small></button>
-            <button type="button" class="drum-pad drum-cymbal" data-drum="cymbal" aria-label="تشغيل صنج، الاختصار 6"><span class="drum-key-number">6</span><span class="drum-pad-symbol">◎</span><strong>صَنج</strong><small>رنين الصنج</small></button>
-          </div>
-          <p id="drumNowPlaying" class="drum-now-playing" aria-live="polite">اختر إحدى الخانات لبدء العزف.</p>
+        <div class="drum-mode-tabs" role="tablist" aria-label="وضع الإيقاع">
+          <button type="button" class="drum-mode-tab active" data-drum-mode="free" role="tab" aria-selected="true">العزف الحر</button>
+          <button type="button" class="drum-mode-tab" data-drum-mode="ready" role="tab" aria-selected="false">إيقاعات جاهزة</button>
         </div>
-        <p class="drum-note">تعمل الأصوات مباشرة من المتصفح، ولا تحتاج إلى تحميل ملفات صوتية أو منح إذن للميكروفون.</p>
+        <section id="freeDrumMode" class="drum-mode-panel" aria-label="العزف الحر">
+          <div class="drum-machine">
+            <div class="drum-machine-top">
+              <div><span class="drum-live-dot"></span><b>لوحة العزف المباشر</b></div>
+              <span class="drum-hint">12 صوتاً · اضغط أو استخدم لوحة المفاتيح</span>
+            </div>
+            <div id="drumPads" class="drum-pads" aria-label="أصوات الإيقاع">
+              <button type="button" class="drum-pad drum-dum" data-drum="dum"><span class="drum-key-number">1</span><span class="drum-pad-symbol">◉</span><strong>دُم</strong><small>طبلة عميقة</small></button>
+              <button type="button" class="drum-pad drum-tak" data-drum="tak"><span class="drum-key-number">2</span><span class="drum-pad-symbol">✦</span><strong>تَك</strong><small>ضربة حادة</small></button>
+              <button type="button" class="drum-pad drum-daf" data-drum="daf"><span class="drum-key-number">3</span><span class="drum-pad-symbol">◌</span><strong>دَف</strong><small>دف شرقي</small></button>
+              <button type="button" class="drum-pad drum-riq" data-drum="riq"><span class="drum-key-number">4</span><span class="drum-pad-symbol">✧</span><strong>رَق</strong><small>رنين الرق</small></button>
+              <button type="button" class="drum-pad drum-clap" data-drum="clap"><span class="drum-key-number">5</span><span class="drum-pad-symbol">✋</span><strong>تصفيق</strong><small>تصفيق يدوي</small></button>
+              <button type="button" class="drum-pad drum-cymbal" data-drum="cymbal"><span class="drum-key-number">6</span><span class="drum-pad-symbol">◎</span><strong>صَنج</strong><small>رنين معدني</small></button>
+              <button type="button" class="drum-pad drum-snare" data-drum="snare"><span class="drum-key-number">7</span><span class="drum-pad-symbol">▣</span><strong>سنير</strong><small>طبلة جانبية</small></button>
+              <button type="button" class="drum-pad drum-bass" data-drum="bass"><span class="drum-key-number">8</span><span class="drum-pad-symbol">⬤</span><strong>باس</strong><small>ركلة منخفضة</small></button>
+              <button type="button" class="drum-pad drum-slap" data-drum="slap"><span class="drum-key-number">9</span><span class="drum-pad-symbol">✹</span><strong>صفعة</strong><small>ضربة حادة للدف</small></button>
+              <button type="button" class="drum-pad drum-sagat" data-drum="sagat"><span class="drum-key-number">0</span><span class="drum-pad-symbol">✺</span><strong>صاجات</strong><small>صاجات الأصابع</small></button>
+              <button type="button" class="drum-pad drum-shaker" data-drum="shaker"><span class="drum-key-number">Q</span><span class="drum-pad-symbol">〰</span><strong>شيكر</strong><small>خشخشة إيقاعية</small></button>
+              <button type="button" class="drum-pad drum-tom" data-drum="tom"><span class="drum-key-number">W</span><span class="drum-pad-symbol">◍</span><strong>توم</strong><small>طبلة متوسطة</small></button>
+            </div>
+          </div>
+        </section>
+        <section id="readyDrumMode" class="drum-mode-panel" aria-label="إيقاعات جاهزة" hidden>
+          <div class="rhythm-console">
+            <div class="rhythm-console-heading"><div><span class="section-kicker">مشغّل الإيقاعات</span><h3>اختر الإيقاع واعزف معه</h3></div><span id="rhythmPlayState" class="rhythm-state">الإيقاع متوقف</span></div>
+            <label class="rhythm-field" for="rhythmSelect">نوع الإيقاع</label>
+            <select id="rhythmSelect" class="rhythm-select">
+              <option value="maqsum">مقسوم · 4/4</option>
+              <option value="baladi">بلدي · 4/4</option>
+              <option value="malfuf">ملفوف · 2/4</option>
+              <option value="saidi">صعيدي · 4/4</option>
+              <option value="wahda">وحدة كبيرة · 4/4</option>
+            </select>
+            <p id="rhythmDescription" class="rhythm-description">إيقاع شرقي رباعي شائع</p>
+            <div class="tempo-control">
+              <div class="tempo-label"><label for="rhythmTempo">سرعة الإيقاع</label><strong id="rhythmTempoValue">100 BPM</strong></div>
+              <input id="rhythmTempo" type="range" min="50" max="180" step="1" value="100">
+              <div class="tempo-range"><span>بطيء · 50</span><span>سريع · 180</span></div>
+            </div>
+            <div class="rhythm-actions">
+              <button type="button" id="rhythmStart" class="primary-button">▶ تشغيل الإيقاع</button>
+              <button type="button" id="rhythmStop" class="secondary-button" disabled>■ إيقاف</button>
+              <span id="rhythmBeat" class="rhythm-beat">جاهز</span>
+            </div>
+            <p class="rhythm-play-along">بعد الضغط على تشغيل، يمكنك العودة إلى خانات العزف الحر والضغط عليها فوق الإيقاع المصاحب.</p>
+          </div>
+        </section>
+        <p id="drumNowPlaying" class="drum-now-playing" aria-live="polite">اختر صوتاً للعزف أو شغّل إيقاعاً جاهزاً.</p>
+        <p class="drum-note">الأصوات مولّدة داخل المتصفح ولا تحتاج إلى ملفات صوتية أو إذن الميكروفون. أوقف الإيقاع قبل مغادرة الصفحة.</p>
       </section>
     </div>
     <section class="disclaimer tuner-disclaimer"><b>ملاحظة حول الضبط الشرقي</b><p>العود والبزق والكمان الشرقي لها مدارس وتقاليد متعددة، وقد يختلف عدد الأوتار والتردد المرجعي بحسب المنطقة والعازف. الأنماط المعروضة نقطة بداية شائعة وليست معياراً موحداً؛ استخدم الإعداد المخصص وعدّل الترددات وفق مرجع أستاذك أو فرقتك.</p></section>
