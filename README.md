@@ -4,7 +4,8 @@
 
 - **Live tuner:** microphone-based pitch detection, string reference tones, cents deviation, and editable string frequencies.
 - **Maqam explorer:** interactive scale degrees, quarter-tone notes, instrument voices, and octave transposition.
-- **Rhythm studio:** playable drum pads, ready-made Eastern and Western patterns, tempo control, and keyboard shortcuts.\n- **Nature sounds:** eight real field recordings from public-domain or CC0 sources, with volume, loop, and stop controls.
+- **Rhythm studio:** playable drum pads, ready-made Eastern and Western patterns, tempo control, and keyboard shortcuts.
+- **Nature sounds:** eight real field recordings from public-domain or CC0 sources, with volume, loop, and stop controls.
 
 **Live application:** https://mohammadbs24354.github.io/maqam-tuner/  
 **Source code:** https://github.com/Mohammadbs24354/maqam-tuner
