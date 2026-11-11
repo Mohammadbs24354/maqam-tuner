@@ -198,7 +198,19 @@
   const natural=["دو","ري","مي","فا","صول","لا","سي"];
   const rootChoices=Array.from({length:12},(_,i)=>({value:i+60,label:chromatic[i]}));
   rootChoices.push({value:"63.5",label:"مي نصف بيمول"});
-  const pianoState={context:null,oscillators:[],sequenceTimer:null,sequenceIndex:0,notes:[]};
+  const maqamVoices={
+    piano:{name:"بيانو",wave:"sine",partials:[1,.52,.28,.15,.08,.035],attack:.008,decay:.32,sustain:.035,release:.22,filter:5200},
+    electricGuitar:{name:"جيتار كهربائي",wave:"sawtooth",partials:[1,.34,.2,.12,.07],attack:.006,decay:.18,sustain:.2,release:.12,filter:3400},
+    cleanGuitar:{name:"جيتار نظيف",wave:"triangle",partials:[1,.3,.12,.055],attack:.008,decay:.2,sustain:.09,release:.18,filter:4800},
+    oud:{name:"عود",wave:"triangle",partials:[1,.58,.3,.16,.08,.035],attack:.004,decay:.14,sustain:.025,release:.16,filter:5200},
+    qanun:{name:"قانون",wave:"triangle",partials:[1,.72,.42,.22,.11,.05],attack:.003,decay:.19,sustain:.035,release:.14,filter:6500},
+    nay:{name:"ناي",wave:"sine",partials:[1,.16,.055,.018],attack:.09,decay:.12,sustain:.72,release:.2,filter:3000},
+    flute:{name:"فلوت",wave:"sine",partials:[1,.1,.025,.01],attack:.055,decay:.1,sustain:.78,release:.18,filter:4200},
+    violin:{name:"كمان",wave:"sawtooth",partials:[1,.48,.27,.16,.08],attack:.12,decay:.12,sustain:.76,release:.24,filter:4200},
+    cello:{name:"تشيللو",wave:"sawtooth",partials:[1,.38,.2,.09],attack:.14,decay:.16,sustain:.72,release:.28,filter:2300},
+    saxophone:{name:"ساكسفون",wave:"sawtooth",partials:[1,.58,.32,.17,.08],attack:.035,decay:.12,sustain:.7,release:.2,filter:3100}
+  };
+  const pianoState={context:null,voices:[],sequenceTimer:null,sequenceIndex:0,notes:[]};
   function noteName(midi){
     const lower=Math.floor(midi),fraction=midi-lower;
     if(Math.abs(fraction-.5)<.001)return chromatic[(Math.round(lower)+1)%12]+" نصف بيمول";
@@ -222,12 +234,42 @@
   }
   const heldPianoNotes=new Map();
   const releasedPianoKeys=new Set();
+  function createMaqamVoice(ctx,midi,duration){
+    const preset=maqamVoices[$("maqamVoice").value]||maqamVoices.piano;
+    const now=ctx.currentTime,frequency=A4*Math.pow(2,(midi-69)/12);
+    const envelope=ctx.createGain(),filter=ctx.createBiquadFilter();
+    filter.type="lowpass";filter.frequency.setValueAtTime(preset.filter,now);filter.Q.value=.55;
+    filter.connect(envelope);envelope.connect(ctx.destination);
+    envelope.gain.setValueAtTime(.0001,now);
+    envelope.gain.linearRampToValueAtTime(.19,now+preset.attack);
+    envelope.gain.setTargetAtTime(.19*preset.sustain,now+preset.attack,preset.decay);
+    const oscillators=preset.partials.map((level,index)=>{
+      const osc=ctx.createOscillator(),partial=ctx.createGain();
+      osc.type=preset.wave;osc.frequency.setValueAtTime(frequency*(index+1),now);
+      partial.gain.value=level/(1+index*.12);osc.connect(partial);partial.connect(filter);osc.start(now);
+      return osc;
+    });
+    let stopped=false;
+    const voice={
+      stop(){
+        if(stopped)return;stopped=true;
+        const time=ctx.currentTime;
+        envelope.gain.cancelScheduledValues(time);
+        envelope.gain.setTargetAtTime(.0001,time,.045);
+        oscillators.forEach(osc=>{try{osc.stop(time+.24);}catch(error){}});
+      }
+    };
+    if(Number.isFinite(duration)){
+      envelope.gain.setTargetAtTime(.0001,now+duration,preset.release);
+      oscillators.forEach(osc=>{try{osc.stop(now+duration+preset.release*4);}catch(error){}});
+    }
+    oscillators[0].onended=()=>{filter.disconnect();envelope.disconnect();};
+    pianoState.voices.push(voice);
+    return voice;
+  }
   function stopHeldPianoNote(key){
     const held=heldPianoNotes.get(key);if(!held){releasedPianoKeys.add(key);return;}
-    const now=held.context.currentTime;
-    held.gain.gain.cancelScheduledValues(now);held.gain.gain.setTargetAtTime(.0001,now,.035);
-    try{held.osc.stop(now+.18);}catch(e){}
-    heldPianoNotes.delete(key);
+    held.voice.stop();heldPianoNotes.delete(key);
   }
   async function startHeldPianoNote(midi,label,key){
     try{
@@ -237,12 +279,9 @@
       const ctx=pianoState.context;if(ctx.state==="suspended")await ctx.resume();
       if(releasedPianoKeys.has(key)){releasedPianoKeys.delete(key);return;}
       if(heldPianoNotes.has(key))return;
-      const osc=ctx.createOscillator(),gain=ctx.createGain(),now=ctx.currentTime;
-      osc.type="triangle";osc.frequency.value=A4*Math.pow(2,(midi-69)/12);
-      gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.16,now+.025);
-      osc.connect(gain);gain.connect(ctx.destination);osc.start(now);
-      heldPianoNotes.set(key,{osc,gain,context:ctx});
-      $("pianoNowPlaying").textContent="تعزف الآن: "+label+" · "+(A4*Math.pow(2,(midi-69)/12)).toFixed(2)+" Hz";
+      const voice=createMaqamVoice(ctx,midi,Infinity);
+      heldPianoNotes.set(key,{voice});
+      $("pianoNowPlaying").textContent="تعزف الآن: "+label+" · "+(A4*Math.pow(2,(midi-69)/12)).toFixed(2)+" Hz · "+maqamVoices[$("maqamVoice").value].name;
     }catch(error){$("pianoNowPlaying").textContent="تعذر تشغيل الصوت. تحقق من إعدادات الصوت.";}
   }
   function buildPiano(){
@@ -297,19 +336,16 @@
     try{
       if(!pianoState.context)pianoState.context=new (window.AudioContext||window.webkitAudioContext)();
       const ctx=pianoState.context;if(ctx.state==="suspended")await ctx.resume();
-      const osc=ctx.createOscillator(),gain=ctx.createGain(),now=ctx.currentTime;
-      osc.type="triangle";osc.frequency.value=A4*Math.pow(2,(midi-69)/12);
-      gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.18,now+.025);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
-      osc.connect(gain);gain.connect(ctx.destination);osc.start(now);osc.stop(now+duration+.03);
-      pianoState.oscillators.push(osc);osc.onended=()=>{pianoState.oscillators=pianoState.oscillators.filter(x=>x!==osc);};
-      $("pianoNowPlaying").textContent="النغمة: "+label+" · "+(A4*Math.pow(2,(midi-69)/12)).toFixed(2)+" Hz";
+      createMaqamVoice(ctx,midi,duration);
+      $("pianoNowPlaying").textContent="النغمة: "+label+" · "+(A4*Math.pow(2,(midi-69)/12)).toFixed(2)+" Hz · "+maqamVoices[$("maqamVoice").value].name;
     }catch(error){$("pianoNowPlaying").textContent="تعذر تشغيل الصوت. جرّب الضغط على المفتاح مرة أخرى.";}
   }
   function stopScalePlayback(){
     if(pianoState.sequenceTimer){clearTimeout(pianoState.sequenceTimer);pianoState.sequenceTimer=null;}
-    pianoState.oscillators.forEach(osc=>{try{osc.stop();}catch(e){}});
+    pianoState.voices.forEach(voice=>voice.stop());
+    pianoState.voices=[];
     [...heldPianoNotes.keys()].forEach(stopHeldPianoNote);
-    pianoState.oscillators=[];$("playScale").disabled=false;$("stopScale").disabled=true;
+    $("playScale").disabled=false;$("stopScale").disabled=true;
     $("pianoNowPlaying").textContent="تم إيقاف العزف.";
   }
   function playFullScale(){
@@ -323,8 +359,9 @@
     const select=$("maqamRoot");
     rootChoices.forEach(item=>{const option=document.createElement("option");option.value=String(item.value);option.textContent=item.label;select.append(option);});
     function updateRootDefault(){const m=maqams[$("maqamSelect").value];select.value=String(m.root);}
-    $("maqamSelect").addEventListener("change",()=>{updateRootDefault();stopScalePlayback();buildPiano();});
+    $("maqamSelect").addEventListener("change",()=>{stopScalePlayback();updateRootDefault();buildPiano();});
     select.addEventListener("change",()=>{stopScalePlayback();buildPiano();});
+    $("maqamVoice").addEventListener("change",()=>{stopScalePlayback();buildPiano();$("pianoNowPlaying").textContent="تم تغيير صوت الآلة إلى "+maqamVoices[$("maqamVoice").value].name+".";});
     $("playScale").addEventListener("click",playFullScale);$("stopScale").addEventListener("click",stopScalePlayback);
     updateRootDefault();buildPiano();
   }
