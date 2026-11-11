@@ -25,6 +25,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Check JavaScript syntax
         run: node --check app.js
+      - name: Run smoke tests
+        run: node tests/smoke.test.js
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
