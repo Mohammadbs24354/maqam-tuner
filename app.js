@@ -26,7 +26,7 @@
     ]}
   };
   const $ = id => document.getElementById(id);
-  const state = {instrument:"oud",tuningIndex:0,stringIndex:0,stream:null,context:null,analyser:null,buffer:null,raf:0,selectedFrequency:0};
+  const state = {instrument:"oud",tuningIndex:0,stringIndex:0,stream:null,context:null,analyser:null,buffer:null,raf:0,selectedFrequency:0,starting:false,startToken:0,lastAnalysisAt:0};
   const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
   function currentTuning(){return presets[state.instrument].tunings[state.tuningIndex];}
   function currentStrings(){return currentTuning().strings;}
@@ -132,34 +132,49 @@
   }
   function tick(){
     if(!state.analyser)return;
-    state.analyser.getFloatTimeDomainData(state.buffer);
-    const hz=autoCorrelate(state.buffer,state.context.sampleRate);
-    if(hz>35&&hz<1200){
-      const n=frequencyToNote(hz);
-      const targetFrequency=currentStrings()[state.stringIndex][2];
-      const targetNote=frequencyToNote(targetFrequency);
-      const cents=1200*Math.log2(hz/targetFrequency);
-      $("noteName").textContent=n.name;$("noteOctave").textContent=n.octave;
-      $("frequency").textContent=hz.toFixed(2);
-      $("pitchState").textContent=Math.abs(cents)<=5?"مضبوط تقريباً":cents<0?"أخفض من الهدف":"أعلى من الهدف";
-      if(Math.abs(cents)<=5)$("guidance").textContent="ممتاز! الوتر قريب جداً من التردد المرجعي المحدد.";
-      else if(Math.abs(cents)>100)$("guidance").textContent="النغمة بعيدة عن الوتر المحدد ("+targetNote.name+targetNote.octave+"). تأكد من اختيار الوتر الصحيح.";
-      else $("guidance").textContent=cents<0?"ارفع شدّ الوتر قليلاً لزيادة التردد.":"أرخِ الوتر قليلاً لخفض التردد.";
-      updateMeter(cents);
+    const now=performance.now();
+    // Avoid running pitch detection on every display frame.
+    if(now-state.lastAnalysisAt>=40){
+      state.lastAnalysisAt=now;
+      state.analyser.getFloatTimeDomainData(state.buffer);
+      const hz=autoCorrelate(state.buffer,state.context.sampleRate);
+      if(hz>35&&hz<1200){
+        const n=frequencyToNote(hz);
+        const targetFrequency=currentStrings()[state.stringIndex][2];
+        const targetNote=frequencyToNote(targetFrequency);
+        const cents=1200*Math.log2(hz/targetFrequency);
+        $("noteName").textContent=n.name;$("noteOctave").textContent=n.octave;
+        $("frequency").textContent=hz.toFixed(2);
+        $("pitchState").textContent=Math.abs(cents)<=5?"مضبوط تقريباً":cents<0?"أخفض من الهدف":"أعلى من الهدف";
+        if(Math.abs(cents)<=5)$("guidance").textContent="ممتاز! الوتر قريب جداً من التردد المرجعي المحدد.";
+        else if(Math.abs(cents)>100)$("guidance").textContent="النغمة بعيدة عن الوتر المحدد ("+targetNote.name+targetNote.octave+"). تأكد من اختيار الوتر الصحيح.";
+        else $("guidance").textContent=cents<0?"ارفع شدّ الوتر قليلاً لزيادة التردد.":"أرخِ الوتر قليلاً لخفض التردد.";
+        updateMeter(cents);
+      }
     }
     state.raf=requestAnimationFrame(tick);
   }
   async function start(){
+    if(state.starting||state.stream)return;
     $("errorMessage").hidden=true;
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){showError("المتصفح لا يدعم الوصول إلى الميكروفون. افتح الموقع عبر HTTPS أو localhost واستخدم متصفحاً حديثاً.");return;}
+    state.starting=true;
+    const token=++state.startToken;
+    $("startButton").disabled=true;
     try{
-      state.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
-      state.context=new (window.AudioContext||window.webkitAudioContext)();
+      const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+      if(token!==state.startToken){stream.getTracks().forEach(track=>track.stop());return;}
+      state.stream=stream;
+      const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+      if(!AudioContextClass)throw new Error("Web Audio API is not supported");
+      state.context=new AudioContextClass();
       if(state.context.state==="suspended")await state.context.resume();
-      const source=state.context.createMediaStreamSource(state.stream);state.analyser=state.context.createAnalyser();state.analyser.fftSize=4096;state.analyser.smoothingTimeConstant=.15;source.connect(state.analyser);
-      state.buffer=new Float32Array(state.analyser.fftSize);$("startButton").disabled=true;$("stopButton").disabled=false;$("micStatus").classList.add("on");$("micStatus").innerHTML="<i></i> يستمع الآن";$("pitchState").textContent="استمع إلى الوتر";
+      if(token!==state.startToken){stream.getTracks().forEach(track=>track.stop());return;}
+      const source=state.context.createMediaStreamSource(stream);state.analyser=state.context.createAnalyser();state.analyser.fftSize=4096;state.analyser.smoothingTimeConstant=.15;source.connect(state.analyser);
+      state.buffer=new Float32Array(state.analyser.fftSize);state.lastAnalysisAt=0;state.starting=false;$("stopButton").disabled=false;$("micStatus").classList.add("on");$("micStatus").innerHTML="<i></i> يستمع الآن";$("pitchState").textContent="استمع إلى الوتر";
       tick();
     }catch(err){
+      if(token!==state.startToken)return;
       let msg="تعذر تشغيل الميكروفون. تحقق من توصيله ومن إعدادات الخصوصية ثم حاول مجدداً.";
       if(err&&err.name==="NotAllowedError")msg="تم رفض إذن الميكروفون. اسمح للموقع باستخدام الميكروفون من رمز القفل بجانب العنوان أو إعدادات المتصفح، ثم أعد المحاولة.";
       else if(err&&err.name==="NotFoundError")msg="لم يتم العثور على ميكروفون متصل بالجهاز.";
@@ -170,6 +185,7 @@
   }
   function showError(msg){$("errorMessage").textContent=msg;$("errorMessage").hidden=false;}
   function stop(){
+    state.startToken++;state.starting=false;state.lastAnalysisAt=0;
     if(state.raf)cancelAnimationFrame(state.raf);state.raf=0;
     if(state.stream){state.stream.getTracks().forEach(t=>t.stop());state.stream=null;}
     if(state.context){state.context.close().catch(()=>{});state.context=null;}
@@ -266,10 +282,10 @@
   }
   async function createMaqamVoice(ctx,midi,duration){
     const preset=maqamVoices[$("maqamVoice").value]||maqamVoices.piano;
-    const now=ctx.currentTime;
     if(preset.samples){
       const sample=closestMaqamSample(preset,midi);
       const buffer=await loadMaqamSample(ctx,preset,sample);
+      const now=ctx.currentTime;
       const source=ctx.createBufferSource(),envelope=ctx.createGain();
       source.buffer=buffer;
       source.playbackRate.setValueAtTime(Math.pow(2,(midi-sample[1])/12),now);
@@ -297,6 +313,7 @@
       pianoState.voices.push(voice);source.start(now);
       return voice;
     }
+    const now=ctx.currentTime;
     const frequency=A4*Math.pow(2,(midi-69)/12);
     const envelope=ctx.createGain(),filter=ctx.createBiquadFilter();
     filter.type="lowpass";filter.frequency.setValueAtTime(preset.filter,now);filter.Q.value=.55;
@@ -395,13 +412,14 @@
       chip.append(degree,document.createTextNode(intervalLabel(diff)));intervals.append(chip);
     }
   }
-  async function playPianoNote(midi,label,duration=.65){
+  async function playPianoNote(midi,label,duration=.65,token=pianoState.playbackToken){
     try{
       if(!pianoState.context)pianoState.context=new (window.AudioContext||window.webkitAudioContext)();
       const ctx=pianoState.context;if(ctx.state==="suspended")await ctx.resume();
-      await createMaqamVoice(ctx,midi,duration);
+      const voice=await createMaqamVoice(ctx,midi,duration);
+      if(token!==pianoState.playbackToken){voice.stop();return;}
       $("pianoNowPlaying").textContent="النغمة: "+label+" · "+(A4*Math.pow(2,(midi-69)/12)).toFixed(2)+" Hz · "+maqamVoices[$("maqamVoice").value].name;
-    }catch(error){$("pianoNowPlaying").textContent="تعذر تشغيل الصوت. جرّب الضغط على المفتاح مرة أخرى.";}
+    }catch(error){if(token===pianoState.playbackToken)$("pianoNowPlaying").textContent="تعذر تشغيل الصوت. جرّب الضغط على المفتاح مرة أخرى.";}
   }
   function stopScalePlayback(){
     pianoState.playbackToken++;
@@ -425,7 +443,7 @@
     }
     if(token!==pianoState.playbackToken)return;
     const next=()=>{if(token!==pianoState.playbackToken)return;if(pianoState.sequenceIndex>=pianoState.notes.length){pianoState.sequenceTimer=null;$("playScale").disabled=false;$("stopScale").disabled=true;$("pianoNowPlaying").textContent="انتهى عزف مقام "+data.name+".";return;}
-      const index=pianoState.sequenceIndex++,midi=pianoState.notes[index],label=data.labels?.[index]||noteName(midi);playPianoNote(midi,label,.48);pianoState.sequenceTimer=setTimeout(next,560);};
+      const index=pianoState.sequenceIndex++,midi=pianoState.notes[index],label=data.labels?.[index]||noteName(midi);playPianoNote(midi,label,.48,token);pianoState.sequenceTimer=setTimeout(next,560);};
     next();
   }
   function updateMaqamVoiceSource(){
