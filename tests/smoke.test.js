@@ -175,4 +175,4 @@ assert.match(html,/id="effectsLoop"/,"the page must provide a loop control for l
 assert.match(css,/\.effects-grid/,"nature sound cards need a responsive grid");
 assert.match(css,/\.effect-card:focus-visible/,"sound effect controls must be keyboard accessible");
 
-assert.match(html,/11 تسجيلات|11 صوتاً|11 أصوات/, "nature library should communicate the expanded collection size");
+assert.match(html,/11 تسجيلاً/, "nature library should communicate the expanded collection size");
