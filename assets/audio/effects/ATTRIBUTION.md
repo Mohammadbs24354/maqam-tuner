@@ -6,6 +6,9 @@ The nature page uses direct recordings hosted by Wikimedia Commons. No synthesiz
 |---|---|---|---|---|
 | Forest birds | Birds forest.ogg | Barracuda1983 | Public domain (author dedication) | https://commons.wikimedia.org/wiki/File:Birds_forest.ogg |
 | Crow call | American Crow.ogg | G. McCrane | Public domain (author dedication) | https://commons.wikimedia.org/wiki/File:American_Crow.ogg |
+| Morning birds | Réveil des oiseaux.ogg | Joseph Sardin | CC0 1.0 Universal | https://commons.wikimedia.org/wiki/File:Réveil_des_oiseaux.ogg |
+| Flowing water | Water flowing pouring trickling.ogg | Stephan | Public domain (PDSounds author dedication) | https://commons.wikimedia.org/wiki/File:Water_flowing_pouring_trickling.ogg |
+| Rain, thunder and birds | Rainthunderandbirds.ogg | Ezwa | Public domain (PDSounds author dedication) | https://commons.wikimedia.org/wiki/File:Rainthunderandbirds.ogg |
 | Rainforest ambience | Walk in the rainforest.ogg | ezwa | Public domain (PDSounds author dedication) | https://commons.wikimedia.org/wiki/File:Walk_in_the_rainforest.ogg |
 | Beach waves | On a pebble beach.ogg | earthcalling | Public domain (PDSounds author dedication) | https://commons.wikimedia.org/wiki/File:On_a_pebble_beach.ogg |
 | Flowing stream | Swale.ogg | Siddharth Patil (Ksd5) | Public domain (author dedication) | https://commons.wikimedia.org/wiki/File:Swale.ogg |
@@ -18,8 +21,12 @@ The nature page uses direct recordings hosted by Wikimedia Commons. No synthesiz
 - The former simulated-gunshot effect was removed. Its source describes it as a synthesized experiment made with Audacity and popped balloons, so it does not belong in a nature-recording library.
 - Glass tapping and footsteps were removed from this page because they are not nature ambience.
 - The forest birds recording is a 15-second field recording from Fontainebleau, France.
+- The morning birds recording is a 2 minute 55 second dawn ambience by Joseph Sardin, released under CC0 1.0.
+- The flowing-water recording is a 1 minute 37 second natural water recording by Stephan, released into the public domain through PDSounds.
+- The rain, thunder and birds recording is a 2 minute 14 second PDSounds recording by Ezwa, released into the public domain.
 - The rainforest recording is a 31-second field recording from Guadeloupe.
 - The stream recording is a 31-second recording of a small swale flowing into a stream.
 - The wind recording is specifically wind howling inside a building.
+- The new additions are three distinct recordings; they are not synthesized or simulated effects.
 - Audio is streamed on demand from Wikimedia Commons using its file redirect endpoint. Playback requires an internet connection and depends on the source host remaining available.
 - Public-domain and CC0 terms are taken from each linked Commons file page. Creator and source information is retained as a courtesy.
