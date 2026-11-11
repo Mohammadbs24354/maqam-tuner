@@ -156,7 +156,7 @@ assert.match(app, /playPianoNote\(midi,label,\.48,token\)/, "scale sequence canc
 const soundEffects=["crow","forestBirds","rainforest","sea","stream","thunder","wind","rain"];
 for(const effect of soundEffects){
   assert.match(html,new RegExp('data-effect="'+effect+'"'),"nature page should expose "+effect);
-  assert.match(app,new RegExp(effect+':\\\\{name:'),"nature sound should map to a real field recording: "+effect);
+  assert.match(app,new RegExp(effect+':\\{name:'),"nature sound should map to a real field recording: "+effect);
 }
 for(const removed of ["glassTap","leaves","gunshot"]) assert.doesNotMatch(html,new RegExp('data-effect="'+removed+'"'),"non-nature or misleading effect removed: "+removed);
 assert.match(html,/id="effectsPage"/,"nature sounds must have a dedicated navigable page");
