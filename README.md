@@ -4,7 +4,7 @@
 
 - **Live tuner:** microphone-based pitch detection, string reference tones, cents deviation, and editable string frequencies.
 - **Maqam explorer:** interactive scale degrees, quarter-tone notes, instrument voices, and octave transposition.
-- **Rhythm studio:** playable drum pads, ready-made Eastern and Western patterns, tempo control, and keyboard shortcuts.\n- **Sound effects:** eight real nature field recordings hosted on Wikimedia Commons, with volume, loop, and stop controls.
+- **Rhythm studio:** playable drum pads, ready-made Eastern and Western patterns, tempo control, and keyboard shortcuts.\n- **Nature sounds:** eight real field recordings from public-domain or CC0 sources, with volume, loop, and stop controls.
 
 **Live application:** https://mohammadbs24354.github.io/maqam-tuner/  
 **Source code:** https://github.com/Mohammadbs24354/maqam-tuner
@@ -83,7 +83,13 @@ The rhythm studio provides **14 preset patterns**.
 
 The tempo control ranges from 50 to 180 BPM. Users can also play individual percussion sounds while a pattern is running. The drum voices are synthesized in the browser using the Web Audio API; they are not recorded drum samples.
 
-## Sound effects\n\nThe sound-effects library currently includes glass tapping, a stylized crow call, rustling leaves, ocean surf, breaking glass, thunder, a cinematic gunshot, wind, and rain. These effects are synthesized locally with the Web Audio API; they are not field recordings or downloaded sound files. The effects have a separate volume control and require a user click to start audio playback.\n\n## Technology
+## Nature sound library
+
+The page offers eight genuine field recordings: forest birds, an American crow, rainforest ambience, beach waves, a flowing stream, rain and thunder, howling wind, and rain. These are recordings, not generated sounds. They stream on demand from Wikimedia Commons and are selected for Public Domain or CC0 licensing. Volume, looping, and stop controls are provided.
+
+See [assets/audio/effects/ATTRIBUTION.md](assets/audio/effects/ATTRIBUTION.md) for the individual sources and licence details.
+
+## Technology
 
 - HTML5
 - CSS3
