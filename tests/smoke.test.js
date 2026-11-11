@@ -103,3 +103,12 @@ assert.match(css, /prefers-reduced-motion:reduce/, "reduced motion preference sh
 assert.match(css, /@media\(max-width:680px\)/, "mobile layout should be defined");
 assert.match(html, /id="siteTitle"/, "main page should have an accessible title");
 assert.match(html, /aria-label="صفحة استوديو الإيقاعات"/, "drum page should have a descriptive label");
+
+assert.match(html, /id="maqamVoice"/, "maqam player must expose an instrument voice selector");
+for (const voice of ["piano","electricGuitar","cleanGuitar","oud","qanun","nay","flute","violin","cello","saxophone"]) {
+  assert.ok(html.includes('value="' + voice + '"'), "missing maqam instrument voice option: " + voice);
+  assert.ok(app.includes(voice + ":{name:"), "missing synthesized voice profile: " + voice);
+}
+assert.match(app, /function createMaqamVoice/, "maqam notes must use the selected instrument synthesizer");
+assert.match(app, /filter\.type="lowpass"/, "instrument voices should use tone shaping");
+assert.match(app, /maqamVoice.*addEventListener\("change"/, "changing the instrument voice should update playback");
