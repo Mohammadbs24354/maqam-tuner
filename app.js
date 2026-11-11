@@ -143,7 +143,7 @@
     kurd:{name:"كرد",root:62,rootLabel:"ري",steps:[0,2,6,10,14,16,20,24],desc:"كرد على ري: ري، مي بيمول، فا، صول، لا، سي بيمول، دو، ري."},
     saba:{name:"صبا",root:62,rootLabel:"ري",steps:[0,3,6,8,14,16,20,22],desc:"صبا على ري: ري، مي نصف بيمول، فا، صول بيمول، لا، سي بيمول، دو، ري بيمول. هذه صيغة صاعدة لا تنتهي بالأوكتاف."},
     sikah:{name:"سيكاه",root:63.5,rootLabel:"مي نصف بيمول",steps:[0,3,7,11,14,17,21,24],desc:"سيكاه على مي نصف بيمول: مي نصف بيمول، فا، صول، لا، سي نصف بيمول، دو، ري، ثم مي نصف بيمول جواباً."},
-    hijaz:{name:"حجاز",root:62,rootLabel:"ري",steps:[0,2,8,10,14,16,20,24],desc:"حجاز على ري: ري، مي بيمول، فا دييز، صول، لا، سي بيمول، دو، ثم ري جواباً."},
+    hijaz:{name:"حجاز",root:62,rootLabel:"ري",steps:[0,2,8,10,14,16,20,24],labels:["ري","مي بيمول","فا دييز","صول","لا","سي بيمول","دو","ري"],desc:"حجاز على ري: ري، مي بيمول، فا دييز، صول، لا، سي بيمول، دو، ثم ري جواباً."},
     huzam:{name:"هزام",root:63.5,rootLabel:"مي نصف بيمول",steps:[0,3,7,9,15,17,21,24],desc:"هزام على مي نصف بيمول: مي نصف بيمول، فا، صول، لا بيمول، سي، دو، ري، ثم مي نصف بيمول جواباً."},
     ajam:{name:"عجم",root:60,rootLabel:"دو",steps:[0,4,8,10,14,18,22,24],desc:"عجم على درجة دو، وهو السلم الكبير المعروف بأبعاده المنتظمة."},
     nahawand:{name:"نهاوند",root:60,rootLabel:"دو",steps:[0,4,6,10,14,16,20,24],desc:"نهاوند على درجة دو، بصيغة السلم الصغير الطبيعي."},
@@ -173,7 +173,7 @@
     const m=maqams[$("maqamSelect").value];
     const selected=$("maqamRoot").value;
     const root=selected===""?m.root:Number(selected);
-    return {...m,root,notes:m.steps.map(q=>root+q/2)};
+    return {...m,root,labels:root===m.root?m.labels:null,notes:m.steps.map(q=>root+q/2)};
   }
   const heldPianoNotes=new Map();
   const releasedPianoKeys=new Set();
@@ -208,7 +208,7 @@
     keyboard.className="maqam-note-grid";
     keyboard.setAttribute("aria-label","درجات مقام "+data.name);
     data.steps.forEach((q,i)=>{
-      const midi=data.root+q/2,label=noteName(midi),isRoot=i===0,isLast=i===data.steps.length-1,isJawab=isLast&&Math.abs(q-24)<.001;
+      const midi=data.root+q/2,label=data.labels?.[i]||noteName(midi),isRoot=i===0,isLast=i===data.steps.length-1,isJawab=isLast&&Math.abs(q-24)<.001;
       const key=document.createElement("button");
       key.type="button";
       key.className="maqam-note-key"+(isRoot?" root-note-key":"")+(isJawab?" jawab-note-key":(isLast?" ending-note-key":""));
@@ -238,7 +238,7 @@
     const notes=$("scaleNotes"),intervals=$("scaleIntervals");notes.innerHTML="";intervals.innerHTML="";
     data.steps.forEach((q,i)=>{
       const item=document.createElement("div");item.className="scale-note"+(i===0?" root-note":"");
-      const name=document.createElement("b");name.textContent=noteName(data.root+q/2);
+      const name=document.createElement("b");name.textContent=data.labels?.[i]||noteName(data.root+q/2);
       const detail=document.createElement("small");detail.textContent=i===0?"القرار / البداية":i===data.steps.length-1?(Math.abs(q-24)<.001?"الجواب / الأوكتاف":"القفلة / الدرجة الأخيرة"):"الدرجة "+(i+1);
       item.append(name,detail);notes.append(item);
     });
@@ -271,7 +271,7 @@
     stopScalePlayback();const data=getMaqamData();pianoState.notes=data.steps.map(q=>data.root+q/2);pianoState.sequenceIndex=0;
     $("playScale").disabled=true;$("stopScale").disabled=false;
     const next=()=>{if(pianoState.sequenceIndex>=pianoState.notes.length){pianoState.sequenceTimer=null;$("playScale").disabled=false;$("stopScale").disabled=true;$("pianoNowPlaying").textContent="انتهى عزف مقام "+data.name+".";return;}
-      const midi=pianoState.notes[pianoState.sequenceIndex++];playPianoNote(midi,noteName(midi),.48);pianoState.sequenceTimer=setTimeout(next,560);};
+      const index=pianoState.sequenceIndex++,midi=pianoState.notes[index],label=data.labels?.[index]||noteName(midi);playPianoNote(midi,label,.48);pianoState.sequenceTimer=setTimeout(next,560);};
     next();
   }
   function initMaqam(){
