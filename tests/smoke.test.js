@@ -152,3 +152,17 @@ assert.match(app, /state\.startToken\+\+/, "stopping the tuner should invalidate
 assert.match(app, /now-state\.lastAnalysisAt>=40/, "pitch detection should be throttled instead of running on every animation frame");
 assert.match(app, /if\(token!==pianoState\.playbackToken\)\{voice\.stop\(\);return;\}/, "a late-loaded sample must not play after scale playback is stopped");
 assert.match(app, /playPianoNote\(midi,label,\.48,token\)/, "scale sequence cancellation token must reach note playback");
+
+const soundEffects=["glassTap","crow","leaves","sea","glassBreak","thunder","gunshot","wind","rain"];
+for(const effect of soundEffects){
+  assert.match(html,new RegExp('data-effect="'+effect+'"'),"sound effects page should expose "+effect);
+  assert.match(app,new RegExp('type==="'+effect+'"'),"sound generator should implement "+effect);
+}
+assert.match(html,/id="effectsPage"/,"sound effects must have a dedicated navigable page");
+assert.match(html,/data-page="effectsPage"/,"sound effects page must be reachable from main navigation");
+assert.match(html,/id="effectsVolume"/,"sound effects must expose a volume control");
+assert.match(app,/function initSoundEffects\(/,"sound effects controls must be initialized");
+assert.match(app,/function getEffectsBus\(/,"sound effects should use a dedicated gain bus");
+assert.match(app,/getEffectsBus\(ctx\)/,"sound effects must route through the volume-controlled bus");
+assert.match(css,/\.effects-grid/,"sound effects cards need a responsive grid");
+assert.match(css,/\.effect-card:focus-visible/,"sound effect controls must be keyboard accessible");
