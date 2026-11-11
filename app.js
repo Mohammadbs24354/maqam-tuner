@@ -331,85 +331,103 @@
 
 
 
-  const drumNames={dum:"دُم",tak:"تَك",daf:"دَف",riq:"رَق",clap:"تصفيق",cymbal:"صَنج",snare:"سنير",bass:"باس",slap:"صفعة",sagat:"صاجات",shaker:"شيكر",tom:"توم"};
-  const drumKeys={dum:"1",tak:"2",daf:"3",riq:"4",clap:"5",cymbal:"6",snare:"7",bass:"8",slap:"9",sagat:"0",shaker:"Q",tom:"W"};
+  const drumNames={dum:"دُم",tak:"تَك",daf:"دَف",riq:"رَق",clap:"تصفيق",cymbal:"صَنج",snare:"سنير",bass:"باس",slap:"صفعة",sagat:"صاجات",shaker:"شيكر",tom:"توم",hihat:"هاي هات",openHat:"هاي هات مفتوح",ride:"رايد"};
+  const drumKeys={dum:"1",tak:"2",daf:"3",riq:"4",clap:"5",cymbal:"6",snare:"7",bass:"8",slap:"9",sagat:"0",shaker:"Q",tom:"W",hihat:"E",ride:"R",openHat:"T"};
   const rhythmPatterns={
-    maqsum:{name:"مقسوم",beats:4,description:"إيقاع شرقي رباعي شائع",steps:{0:["dum"],3:["tak"],4:["tak"],6:["dum"],8:["dum"],11:["tak"],12:["tak"],14:["dum"]}},
-    baladi:{name:"بلدي",beats:4,description:"إيقاع بلدي بأربع نبضات",steps:{0:["dum"],2:["tak"],4:["dum"],6:["tak"],8:["dum"],10:["tak"],12:["dum"],14:["tak"]}},
-    malfuf:{name:"ملفوف",beats:2,description:"إيقاع سريع بحركة ثنائية",steps:{0:["dum"],2:["tak"],4:["tak"],6:["dum"]}},
-    saidi:{name:"صعيدي",beats:4,description:"إيقاع صعيدي قوي",steps:{0:["dum"],2:["tak"],4:["dum"],6:["tak"],8:["dum"],10:["dum"],12:["tak"],14:["tak"]}},
-    wahda:{name:"وحدة كبيرة",beats:4,description:"إيقاع هادئ بأربع نبضات",steps:{0:["dum"],4:["tak"],8:["dum"],12:["tak"]}},
-    jazzSwing:{name:"جاز سوينغ",beats:4,stepsPerBeat:3,description:"جاز بإحساس سوينغ ثلاثي؛ سنير على النبضتين الثانية والرابعة وهاي هات متحرك.",steps:{0:["bass","cymbal"],2:["shaker"],3:["snare","cymbal"],5:["shaker"],6:["bass","cymbal"],8:["shaker"],9:["snare","cymbal"],11:["shaker"]}},
-    bluesShuffle:{name:"بلوز شافل",beats:4,stepsPerBeat:3,description:"بلوز Shuffle بثلاثيات متأرجحة مع ركلة باس وسنير.",steps:{0:["bass","shaker"],2:["shaker"],3:["snare","shaker"],5:["shaker"],6:["bass","shaker"],8:["shaker"],9:["snare","shaker"],11:["shaker"]}},
-    house:{name:"هاوس",beats:4,description:"Four-on-the-floor: ركلة على كل نبضة مع سنير/تصفيق وهاي هات.",steps:{0:["bass","cymbal"],2:["shaker"],4:["bass","clap"],6:["shaker"],8:["bass","cymbal"],10:["shaker"],12:["bass","clap"],14:["shaker"]}},
-    deepHouse:{name:"ديب هاوس",beats:4,description:"هاوس هادئ وعميق مع ركلة منتظمة ونقرات خفيفة ومساحة بين الضربات.",steps:{0:["bass"],3:["shaker"],4:["bass","clap"],7:["shaker"],8:["bass"],11:["shaker"],12:["bass","clap"],15:["shaker"]}},
-    disco:{name:"ديسكو",beats:4,description:"إيقاع ديسكو راقص بأربع ركلات منتظمة وتصفيق على النبضات الخلفية.",steps:{0:["bass","cymbal"],2:["shaker"],4:["bass","clap"],6:["shaker"],8:["bass","cymbal"],10:["shaker"],12:["bass","clap"],14:["shaker"]}},
-    rock:{name:"روك",beats:4,description:"روك أساسي: ركلة وسنير متناوبان مع صنج مستمر.",steps:{0:["bass","cymbal"],2:["cymbal"],4:["snare","cymbal"],6:["cymbal"],8:["bass","cymbal"],10:["cymbal"],12:["snare","cymbal"],14:["cymbal"]}},
-    funk:{name:"فانك",beats:4,description:"فانك متزامن بضربات باس وسنير متقطعة وشيكر.",steps:{0:["bass","shaker"],3:["snare"],5:["bass","shaker"],7:["snare","shaker"],8:["bass"],10:["shaker"],12:["snare","shaker"],14:["bass","shaker"]}},
-    reggae:{name:"ريغي",beats:4,description:"ريغي بإحساس One Drop؛ تركيز على الضربة الخلفية مع فراغ في بداية الدورة.",steps:{2:["shaker"],4:["clap","cymbal"],6:["shaker"],8:["bass"],10:["shaker"],12:["clap","cymbal"],14:["shaker"]}},
-    bossaNova:{name:"بوسا نوفا",beats:4,description:"بوسا نوفا هادئة بإيقاع لاتيني متداخل وخفيف.",steps:{0:["bass"],3:["shaker"],5:["snare"],7:["shaker"],8:["bass"],10:["shaker"],12:["snare"],15:["shaker"]}}
+    maqsum:{name:"مقسوم",beats:4,description:"مقسوم شرقي رباعي: دُم أساسي مع تكّات ورقّات تملأ الحركة.",steps:{0:["dum"],3:["tak"],4:["tak"],6:["dum"],8:["dum"],11:["tak"],12:["tak"],14:["tak"]}},
+    baladi:{name:"بلدي",beats:4,description:"بلدي ثقيل نسبياً، مع دُم واضح وتكّات متبادلة ولمسات دف.",steps:{0:["dum","daf"],2:["tak"],4:["dum"],6:["tak","riq"],8:["dum","daf"],10:["tak"],12:["dum"],14:["tak","riq"]}},
+    malfuf:{name:"ملفوف",beats:2,description:"ملفوف سريع في ميزان 2/4، مناسب للدخولات والرقصات.",steps:{0:["dum"],2:["tak"],4:["tak"],6:["dum","riq"]}},
+    saidi:{name:"صعيدي",beats:4,description:"إيقاع صعيدي حيوي بضربات دُم متتابعة وتكّات قوية.",steps:{0:["dum"],2:["tak"],4:["dum"],6:["dum","tak"],8:["tak"],10:["dum"],12:["tak"],14:["tak","riq"]}},
+    wahda:{name:"وحدة كبيرة",beats:4,description:"وحدة كبيرة هادئة بأربع نبضات أساسية ومساحة واضحة بين الضربات.",steps:{0:["dum","daf"],4:["tak"],8:["dum"],12:["tak","riq"]}},
+    jazzSwing:{name:"جاز سوينغ",beats:4,stepsPerBeat:3,description:"سوينغ ثلاثي مع رايد متأرجح، وباس على الأولى والثالثة وسنير على الثانية والرابعة.",steps:{0:["bass","ride"],2:["ride"],3:["snare","ride"],5:["ride"],6:["bass","ride"],8:["ride"],9:["snare","ride"],11:["ride"]}},
+    bluesShuffle:{name:"بلوز شافل",beats:4,stepsPerBeat:3,description:"شافل ثلاثي متأرجح مع باس على الأولى والثالثة وسنير على الثانية والرابعة.",steps:{0:["bass","hihat"],2:["hihat"],3:["snare","hihat"],5:["hihat"],6:["bass","hihat"],8:["hihat"],9:["snare","hihat"],11:["hihat"]}},
+    house:{name:"هاوس",beats:4,description:"Four-on-the-floor: ركلة في كل نبضة، تصفيق على الثانية والرابعة وهاي هات على النبضات المقابلة.",steps:{0:["bass","hihat"],2:["hihat"],4:["bass","clap","hihat"],6:["hihat"],8:["bass","hihat"],10:["hihat"],12:["bass","clap","hihat"],14:["hihat"]}},
+    deepHouse:{name:"ديب هاوس",beats:4,description:"ديب هاوس بركلة ثابتة وتصفيق خلفي وهاي هات متباعد يمنح الإيقاع مساحة.",steps:{0:["bass","hihat"],3:["hihat"],4:["bass","clap"],7:["hihat"],8:["bass","hihat"],11:["hihat"],12:["bass","clap"],15:["hihat"]}},
+    disco:{name:"ديسكو",beats:4,description:"ديسكو بأربع ركلات منتظمة وتصفيق على الثانية والرابعة وهاي هات مفتوح.",steps:{0:["bass","hihat"],2:["hihat"],4:["bass","clap","openHat"],6:["hihat"],8:["bass","hihat"],10:["hihat"],12:["bass","clap","openHat"],14:["hihat"]}},
+    rock:{name:"روك",beats:4,description:"روك أساسي: ركلة على الأولى والثالثة، سنير على الثانية والرابعة وهاي هات ثابت.",steps:{0:["bass","hihat"],2:["hihat"],4:["snare","hihat"],6:["hihat"],8:["bass","hihat"],10:["hihat"],12:["snare","hihat"],14:["hihat"]}},
+    funk:{name:"فانك",beats:4,description:"فانك متزامن مع ركلات متقطعة وسنير خلفي وهاي هات متحرك.",steps:{0:["bass","hihat"],3:["snare","hihat"],5:["bass","hihat"],7:["snare","hihat"],8:["bass"],10:["hihat"],12:["snare","hihat"],14:["bass","hihat"]}},
+    reggae:{name:"ريغي",beats:4,description:"One Drop: تركيز الركلة والسنير معاً على النبضة الثالثة، مع هاي هات خفيف.",steps:{2:["hihat"],4:["hihat"],6:["hihat"],8:["bass","snare","hihat"],10:["hihat"],12:["hihat"],14:["hihat"]}},
+    bossaNova:{name:"بوسا نوفا",beats:4,description:"بوسا نوفا هادئة مع نمط باس متداخل وريم/سنير خفيف وشيكر مستمر.",steps:{0:["bass","shaker"],3:["shaker"],4:["snare","shaker"],6:["bass","shaker"],8:["bass","shaker"],10:["shaker"],12:["snare","shaker"],14:["bass","shaker"]}}
   };
-  let drumAudioContext=null;
+  let drumAudioContext=null,drumMaster=null,drumCompressor=null;
   const rhythmState={timer:null,nextStep:0,nextTime:0,bpm:100,playing:false,pattern:"maqsum"};
   function getDrumContext(){
     const AudioCtx=window.AudioContext||window.webkitAudioContext;
     if(!AudioCtx)throw new Error("Web Audio API غير مدعوم في هذا المتصفح");
-    if(!drumAudioContext||drumAudioContext.state==="closed")drumAudioContext=new AudioCtx();
+    if(!drumAudioContext||drumAudioContext.state==="closed"){drumAudioContext=new AudioCtx();drumMaster=null;drumCompressor=null;}
+    if(!drumMaster){
+      drumMaster=drumAudioContext.createGain();drumCompressor=drumAudioContext.createDynamicsCompressor();
+      drumMaster.gain.value=.78;drumCompressor.threshold.value=-16;drumCompressor.knee.value=18;
+      drumCompressor.ratio.value=4;drumCompressor.attack.value=.004;drumCompressor.release.value=.18;
+      drumMaster.connect(drumCompressor);drumCompressor.connect(drumAudioContext.destination);
+    }
     return drumAudioContext;
   }
-  function drumNoise(ctx,output,{duration=.12,filter="highpass",frequency=1200,level=.4,decay=.1,at=ctx.currentTime}={}){
-    const length=Math.max(1,Math.floor(ctx.sampleRate*duration));
-    const buffer=ctx.createBuffer(1,length,ctx.sampleRate),samples=buffer.getChannelData(0);
-    for(let i=0;i<length;i++)samples[i]=(Math.random()*2-1)*(1-i/length*.18);
+  function drumNoise(ctx,output,{duration=.12,filter="highpass",frequency=1200,level=.4,decay=.1,at=ctx.currentTime,q=.7}={}){
+    const length=Math.max(1,Math.floor(ctx.sampleRate*duration)),buffer=ctx.createBuffer(1,length,ctx.sampleRate),samples=buffer.getChannelData(0);
+    for(let i=0;i<length;i++){const progress=i/length;samples[i]=(Math.random()*2-1)*Math.pow(1-progress,2.2);}
     const source=ctx.createBufferSource(),filterNode=ctx.createBiquadFilter(),amp=ctx.createGain();
-    source.buffer=buffer;filterNode.type=filter;filterNode.frequency.setValueAtTime(frequency,at);
-    amp.gain.setValueAtTime(Math.max(.0001,level),at);
-    amp.gain.exponentialRampToValueAtTime(.0001,at+Math.max(.015,decay));
-    source.connect(filterNode);filterNode.connect(amp);amp.connect(output);
-    source.start(at);source.stop(at+duration);
+    source.buffer=buffer;filterNode.type=filter;filterNode.frequency.setValueAtTime(frequency,at);filterNode.Q.value=q;
+    amp.gain.setValueAtTime(Math.max(.0001,level),at);amp.gain.exponentialRampToValueAtTime(.0001,at+Math.max(.012,Math.min(decay,duration)));
+    source.connect(filterNode);filterNode.connect(amp);amp.connect(output);source.start(at);source.stop(at+duration);
   }
-  function drumTone(ctx,output,{start=120,end=60,duration=.2,level=.6,wave="sine",at=ctx.currentTime}={}){
-    const osc=ctx.createOscillator(),amp=ctx.createGain();
-    osc.type=wave;osc.frequency.setValueAtTime(Math.max(1,start),at);
-    osc.frequency.exponentialRampToValueAtTime(Math.max(1,end),at+duration);
-    amp.gain.setValueAtTime(Math.max(.0001,level),at);
-    amp.gain.exponentialRampToValueAtTime(.0001,at+duration);
-    osc.connect(amp);amp.connect(output);osc.start(at);osc.stop(at+duration+.01);
+  function drumTone(ctx,output,{start=120,end=60,duration=.2,level=.6,wave="sine",at=ctx.currentTime,detune=0}={}){
+    const osc=ctx.createOscillator(),amp=ctx.createGain();osc.type=wave;
+    osc.frequency.setValueAtTime(Math.max(1,start),at);osc.frequency.exponentialRampToValueAtTime(Math.max(1,end),at+duration);
+    osc.detune.setValueAtTime(detune,at);amp.gain.setValueAtTime(Math.max(.0001,level),at);
+    amp.gain.exponentialRampToValueAtTime(.0001,at+duration);osc.connect(amp);amp.connect(output);osc.start(at);osc.stop(at+duration+.015);
+  }
+  function drumMetal(ctx,output,{frequencies,duration=.3,level=.08,at=ctx.currentTime}={}){
+    frequencies.forEach((frequency,index)=>drumTone(ctx,output,{start:frequency*(1+(index%2)*.003),end:frequency*.995,duration,level:level/(1+index*.22),wave:"sine",at,detune:index%2?7:-5}));
   }
   function playDrumSound(ctx,type,at=ctx.currentTime){
-    const master=ctx.createGain(),compressor=ctx.createDynamicsCompressor();
-    master.gain.setValueAtTime(.82,at);
-    compressor.threshold.setValueAtTime(-8,at);compressor.knee.setValueAtTime(12,at);
-    compressor.ratio.setValueAtTime(5,at);compressor.attack.setValueAtTime(.003,at);compressor.release.setValueAtTime(.15,at);
-    master.connect(compressor);compressor.connect(ctx.destination);
-    if(type==="dum"||type==="bass"){
-      drumTone(ctx,master,{start:type==="bass"?105:155,end:type==="bass"?38:48,duration:.3,level:.95,at});
-      drumNoise(ctx,master,{duration:.05,filter:"lowpass",frequency:650,level:.2,decay:.04,at});
-    }else if(type==="tak"||type==="snare"){
-      drumNoise(ctx,master,{duration:.13,filter:"bandpass",frequency:type==="snare"?1750:2300,level:.85,decay:.1,at});
-      drumTone(ctx,master,{start:270,end:125,duration:.07,level:.16,at});
+    const voice=ctx.createGain();voice.gain.setValueAtTime(.9,at);voice.connect(drumMaster);
+    if(type==="dum"){
+      drumTone(ctx,voice,{start:145,end:48,duration:.28,level:.9,at});drumTone(ctx,voice,{start:310,end:185,duration:.055,level:.16,at});
+      drumNoise(ctx,voice,{duration:.045,filter:"lowpass",frequency:900,level:.12,decay:.035,at});
+    }else if(type==="bass"){
+      drumTone(ctx,voice,{start:155,end:43,duration:.34,level:.95,at});drumTone(ctx,voice,{start:950,end:180,duration:.025,level:.13,at});
+      drumNoise(ctx,voice,{duration:.035,filter:"lowpass",frequency:1000,level:.1,decay:.025,at});
+    }else if(type==="tak"){
+      drumTone(ctx,voice,{start:245,end:125,duration:.065,level:.24,wave:"triangle",at});
+      drumNoise(ctx,voice,{duration:.085,filter:"bandpass",frequency:2450,level:.62,decay:.065,at,q:1.3});
+    }else if(type==="snare"){
+      drumTone(ctx,voice,{start:185,end:125,duration:.12,level:.32,at});drumTone(ctx,voice,{start:330,end:205,duration:.045,level:.13,wave:"triangle",at});
+      drumNoise(ctx,voice,{duration:.19,filter:"highpass",frequency:1750,level:.62,decay:.16,at,q:.8});
     }else if(type==="daf"){
-      drumTone(ctx,master,{start:118,end:75,duration:.24,level:.62,at});
-      drumNoise(ctx,master,{duration:.24,filter:"bandpass",frequency:950,level:.55,decay:.21,at});
+      drumTone(ctx,voice,{start:112,end:72,duration:.22,level:.56,at});drumTone(ctx,voice,{start:178,end:132,duration:.12,level:.2,at});
+      drumNoise(ctx,voice,{duration:.2,filter:"bandpass",frequency:1150,level:.38,decay:.18,at,q:1.1});
     }else if(type==="riq"){
-      drumNoise(ctx,master,{duration:.34,filter:"highpass",frequency:5600,level:.8,decay:.32,at});
-      [2350,3190,4170,5280].forEach(f=>drumTone(ctx,master,{start:f,end:f*.985,duration:.22,level:.12,wave:"square",at}));
+      drumTone(ctx,voice,{start:220,end:145,duration:.09,level:.18,at});drumNoise(ctx,voice,{duration:.11,filter:"highpass",frequency:5100,level:.38,decay:.1,at});
+      drumMetal(ctx,voice,{frequencies:[2450,3180,4070,5210,6380],duration:.2,level:.105,at});
     }else if(type==="clap"){
-      [0,.025,.052].forEach((offset,i)=>drumNoise(ctx,master,{duration:.1,filter:"bandpass",frequency:1350,level:i===2?.62:.42,decay:.075,at:at+offset}));
+      [0,.018,.038,.061].forEach((offset,index)=>drumNoise(ctx,voice,{duration:.075,filter:"bandpass",frequency:1250+index*180,level:index===3?.48:.3,decay:.055,at:at+offset,q:1.2}));
     }else if(type==="cymbal"){
-      drumNoise(ctx,master,{duration:.8,filter:"highpass",frequency:7600,level:.72,decay:.78,at});
-      [1730,2410,3190,4020,5180].forEach(f=>drumTone(ctx,master,{start:f,end:f*.997,duration:.55,level:.055,wave:"square",at}));
+      drumNoise(ctx,voice,{duration:1.05,filter:"highpass",frequency:7200,level:.38,decay:1.02,at,q:.55});
+      drumMetal(ctx,voice,{frequencies:[1730,2410,3190,4020,5180,6370],duration:.85,level:.075,at});
+    }else if(type==="hihat"){
+      drumNoise(ctx,voice,{duration:.055,filter:"highpass",frequency:8200,level:.34,decay:.045,at,q:.5});
+      drumMetal(ctx,voice,{frequencies:[6100,7900,9300],duration:.045,level:.025,at});
+    }else if(type==="openHat"){
+      drumNoise(ctx,voice,{duration:.34,filter:"highpass",frequency:7600,level:.32,decay:.31,at,q:.55});
+      drumMetal(ctx,voice,{frequencies:[5800,7400,9100],duration:.3,level:.035,at});
+    }else if(type==="ride"){
+      drumNoise(ctx,voice,{duration:.42,filter:"highpass",frequency:6500,level:.17,decay:.39,at,q:.65});
+      drumMetal(ctx,voice,{frequencies:[2300,3470,4810,6120,7390],duration:.36,level:.075,at});
     }else if(type==="slap"){
-      drumTone(ctx,master,{start:210,end:95,duration:.11,level:.65,wave:"triangle",at});
-      drumNoise(ctx,master,{duration:.07,filter:"bandpass",frequency:1250,level:.7,decay:.06,at});
+      drumTone(ctx,voice,{start:235,end:105,duration:.095,level:.58,wave:"triangle",at});
+      drumNoise(ctx,voice,{duration:.065,filter:"bandpass",frequency:1450,level:.55,decay:.055,at,q:1.4});
     }else if(type==="sagat"){
-      [3100,3900,4700,5600].forEach(f=>drumTone(ctx,master,{start:f,end:f*.99,duration:.16,level:.09,wave:"square",at}));
-      drumNoise(ctx,master,{duration:.18,filter:"highpass",frequency:6500,level:.35,decay:.16,at});
+      drumMetal(ctx,voice,{frequencies:[2980,3890,4870,5780,6910],duration:.13,level:.09,at});
+      drumNoise(ctx,voice,{duration:.13,filter:"highpass",frequency:6900,level:.2,decay:.12,at,q:.55});
     }else if(type==="shaker"){
-      drumNoise(ctx,master,{duration:.16,filter:"highpass",frequency:4200,level:.42,decay:.14,at});
+      [0,.035,.075].forEach((offset,index)=>drumNoise(ctx,voice,{duration:.055,filter:"highpass",frequency:4300+index*500,level:index===1?.22:.14,decay:.045,at:at+offset,q:.65}));
     }else if(type==="tom"){
-      drumTone(ctx,master,{start:230,end:105,duration:.25,level:.72,wave:"sine",at});
+      drumTone(ctx,voice,{start:225,end:92,duration:.24,level:.68,at});drumTone(ctx,voice,{start:410,end:260,duration:.08,level:.09,wave:"triangle",at});
     }
+    const tail=type==="cymbal"?1.1:type==="ride" ? .48 : type==="openHat" ? .38 : .38;
+    voice.gain.setTargetAtTime(.0001,at+tail,.035);
+    window.setTimeout(()=>{try{voice.disconnect();}catch{}},Math.max(700,tail*1500));
   }
   function setDrumStatus(message){const status=$("drumNowPlaying");if(status)status.textContent=message;}
   function flashDrumPad(type){
