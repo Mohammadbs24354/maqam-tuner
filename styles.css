@@ -562,3 +562,210 @@ footer{margin-top:18px}
 .rhythm-select optgroup{background:#132238;color:#e9c17d;font-weight:700}
 .rhythm-select option{background:#0d1929;color:#f5f7fb}
 @media(max-width:420px){.rhythm-category-tabs{gap:5px}.rhythm-category-tab{padding-inline:6px;font-size:11px}}
+
+
+/* =========================================================
+   MAQAM — visual system refresh
+   Clear hierarchy, calmer spacing, responsive card layouts
+   ========================================================= */
+:root{
+  --bg:#09111e;--panel:#111d2d;--panel2:#17263a;--line:#2b3d54;
+  --text:#f4f6fa;--muted:#a9b7ca;--gold:#e9bd78;--gold-soft:#f5d9a7;
+  --green:#77d8a4;--surface:#0e1928;--radius-lg:22px;--radius-md:15px;
+  --shadow-panel:0 18px 48px rgba(0,0,0,.22);
+}
+html{scroll-behavior:smooth;scroll-padding-top:105px}
+body{
+  background:
+    radial-gradient(ellipse at 82% -8%,rgba(201,153,84,.13),transparent 34%),
+    radial-gradient(ellipse at 8% 28%,rgba(45,91,126,.12),transparent 32%),
+    var(--bg);
+  line-height:1.7;letter-spacing:0;
+}
+.topbar{
+  position:sticky;top:0;z-index:50;max-width:none;width:100%;
+  padding:13px max(24px,calc((100vw - 1240px)/2));
+  gap:24px;background:rgba(9,17,30,.88);backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(155,177,205,.13);
+}
+.brand{flex-shrink:0;gap:11px;text-decoration:none}
+.brand-mark{box-shadow:0 7px 20px rgba(220,174,105,.2)}
+.main-nav{display:flex;align-items:center;justify-content:center;gap:7px;padding:5px;
+  border:1px solid rgba(155,177,205,.15);border-radius:14px;background:#ffffff08}
+.nav-link{min-height:42px;padding:9px 17px;border-radius:10px;transition:background .2s,color .2s,transform .2s}
+.nav-link:hover{background:#ffffff0b}
+.nav-link.active{background:linear-gradient(135deg,#f1d29e,#d8a95e);color:#241b0d;box-shadow:0 4px 14px #0003}
+.top-note{white-space:nowrap;font-size:12px;color:#b8c6d8}
+.page{width:min(1180px,calc(100% - 48px));margin:0 auto;padding:40px 0 76px}
+.intro{max-width:760px;margin:0 auto 38px;text-align:center;padding:24px 18px 30px}
+.eyebrow,.section-kicker{color:var(--gold);font-weight:700;letter-spacing:.025em}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;margin:0 0 12px;padding:6px 13px;border:1px solid #dcb87940;border-radius:30px;background:#dcb8790d;font-size:12px}
+.intro h1{margin:0;font-size:clamp(32px,5vw,54px);line-height:1.3;letter-spacing:-.035em}
+.intro h1 span{color:var(--gold)}
+.lead{max-width:590px;margin:13px auto 0;color:#b4c2d4;font-size:clamp(14px,1.7vw,17px);line-height:1.9}
+.site-page{min-width:0;animation:page-enter .35s ease both}
+.site-page[hidden],.drum-mode-panel[hidden]{display:none!important}
+@keyframes page-enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.workspace{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(300px,.82fr);gap:22px;align-items:start}
+.panel,.maqam-controls,.piano-panel,.scale-details,.drum-machine,.rhythm-console{
+  min-width:0;border:1px solid rgba(151,174,204,.17);border-radius:var(--radius-lg);
+  background:linear-gradient(155deg,rgba(24,39,59,.97),rgba(15,26,42,.98));
+  box-shadow:var(--shadow-panel);
+}
+.panel{padding:clamp(20px,3vw,30px)}
+.panel-head{gap:16px;margin-bottom:22px;padding-bottom:17px;border-bottom:1px solid rgba(155,177,205,.13)}
+.panel-head h2{margin:4px 0 0;font-size:clamp(21px,2.5vw,27px);line-height:1.4}
+.section-kicker{font-size:11px}
+.status-pill{flex-shrink:0}
+.instrument-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:0 0 22px}
+.instrument{min-width:0;min-height:92px;padding:11px 5px;border:1px solid #3b4d64;border-radius:14px;background:#0d1929;transition:transform .18s,border-color .18s,background .18s}
+.instrument:hover{transform:translateY(-2px);border-color:#b9945e}
+.instrument.active{border-color:var(--gold);background:linear-gradient(155deg,#3b342a,#1b2a3d);box-shadow:inset 0 0 0 1px #e9bd7833}
+.instrument-icon{display:grid;place-items:center;width:37px;height:37px;margin:0 auto 7px;border-radius:11px;background:#ffffff0b;color:var(--gold-soft);font-size:17px}
+.instrument b{display:block;font-size:11px;line-height:1.45}
+.settings-row{gap:14px;margin:0 0 9px}
+.settings-row label,.maqam-controls label,.rhythm-field,.tempo-label label{color:#dce5f0;font-weight:700}
+.settings-row select,.maqam-controls select,.rhythm-select{min-height:47px;border:1px solid #40536b;border-radius:12px;background:#0b1727;color:#f5f7fb}
+.tuning-note,.muted,.small-note{color:#a9b8cb;line-height:1.8}
+.pitch-card{margin-top:19px;padding:clamp(18px,3vw,27px);border:1px solid #394c64;border-radius:18px;background:radial-gradient(ellipse at 50% 0%,#2a3c50,#0b1727 72%)}
+.pitch-top{color:#aebdd0}
+.note-display{margin:16px 0 4px}
+.note-display strong{font-size:clamp(58px,8vw,82px);line-height:1.15;color:#f3d39b;text-shadow:0 8px 35px #e7b86a25}
+.frequency{margin:5px 0 22px}
+.meter{max-width:520px;margin:0 auto}
+.meter-track{height:9px;border-radius:20px;background:#26374c}
+.meter-zone{border-radius:20px;background:linear-gradient(90deg,#d28a70,#e7bd78 48%,#72c99a)}
+.meter-needle{width:3px;height:22px;top:-7px;border-radius:5px;background:#fff;box-shadow:0 0 10px #fff9}
+.cents-line{padding-top:16px;border-top:1px solid #ffffff12}
+.guidance{color:#bac8d9;line-height:1.8}
+.actions{gap:10px;margin-top:18px}
+.actions button,.rhythm-actions button,.piano-actions button{min-height:47px;border-radius:12px;font-weight:700}
+.primary-button{background:linear-gradient(135deg,#f0d29e,#d5a65e);color:#251b0d;box-shadow:0 6px 16px #d5a65e24}
+.primary-button:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.secondary-button{border:1px solid #52647b;background:#1b2a3d;color:#e8eef6}
+.permission-help,.reference-box,.disclaimer,.maqam-disclaimer,.drum-note,.rhythm-play-along{
+  border:1px solid #d6b2752b;border-radius:13px;background:#d6b2750a
+}
+.permission-help{align-items:flex-start;margin-top:17px;padding:13px 15px;gap:10px}
+.permission-help p{margin:0;color:#b9c7d8;font-size:12px;line-height:1.8}
+.strings-panel{position:sticky;top:94px}
+.strings-panel .panel-head{margin-bottom:12px}
+.string-list{display:grid;gap:9px;margin-top:18px}
+.string-item{min-height:70px;padding:12px 14px;border:1px solid #34475f;border-radius:13px;background:#0d1929}
+.string-item.active{border-color:var(--gold);background:linear-gradient(110deg,#493b2a55,#0d1929)}
+.reference-box{display:flex;gap:12px;margin-top:20px;padding:14px;align-items:center}
+.reference-box div{min-width:0;flex:1}
+.play-button{flex-shrink:0}
+.info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:25px}
+.info-card{position:relative;min-height:160px;padding:22px;border:1px solid #30435b;border-radius:17px;background:linear-gradient(145deg,#17263a,#101b2b);box-shadow:0 10px 28px #0002}
+.info-number{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#d9b47718;color:var(--gold);font-size:11px;font-weight:700}
+.info-card h3{margin:12px 0 6px;font-size:16px}
+.info-card p{margin:0;color:#aab9cc;font-size:13px;line-height:1.85}
+.maqam-section,.drums-section{display:grid;gap:22px}
+.maqam-heading,.drums-heading{padding:25px 28px;border:1px solid #d8b5792b;border-radius:20px;background:linear-gradient(120deg,#1d2d42,#172438 65%,#282b2a)}
+.maqam-heading h2,.drums-heading h2{margin:7px 0;font-size:clamp(23px,3vw,32px)}
+.maqam-heading>p,.drums-heading>p{max-width:720px;margin:5px 0 0;color:#b4c3d6;line-height:1.9}
+.maqam-layout{display:grid;grid-template-columns:minmax(240px,.72fr) minmax(0,1.6fr);gap:18px;align-items:stretch}
+.maqam-controls,.piano-panel{padding:clamp(18px,2.5vw,26px)}
+.maqam-controls{display:flex;flex-direction:column;gap:11px}
+.maqam-controls select{width:100%;padding:10px 13px}
+.maqam-description{padding:13px;border-radius:12px;background:#ffffff08;color:#b7c5d7;line-height:1.8}
+.piano-panel{overflow:hidden}
+.piano-topline{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:17px}
+.piano-topline b{font-size:17px}
+.piano-topline span{color:#aab9cc;font-size:12px}
+.piano-scroll{max-width:100%;overflow-x:auto;padding-bottom:8px}
+.maqam-note-grid{gap:9px}
+.scale-details{padding:23px}
+.scale-details h3{margin:0 0 7px;font-size:19px}
+.scale-hint{color:#aebdd0;font-size:13px;line-height:1.85}
+.scale-notes,.scale-intervals{gap:10px}
+.maqam-disclaimer,.disclaimer{margin:0;padding:17px 19px;color:#c4cfdd;line-height:1.9}
+.maqam-disclaimer{font-size:12px}
+.drums-section{gap:20px}
+.drums-heading{text-align:center}
+.drums-heading>p{margin-inline:auto}
+.drum-mode-tabs{max-width:470px;width:100%;margin:0 auto;padding:6px;border:1px solid #3b4d64;background:#101b2a;border-radius:15px}
+.drum-mode-tab{min-height:46px;border-radius:10px;font-size:14px}
+.drum-machine{padding:clamp(17px,3vw,27px)}
+.drum-machine-top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid #ffffff14}
+.drum-machine-top>div{display:flex;align-items:center;gap:10px}
+.drum-machine-top b{font-size:17px}
+.drum-hint{color:#aebdd0;font-size:12px}
+.drum-pads{gap:14px}
+#drumPads .drum-pad{min-height:145px;border-radius:16px;transition:transform .14s,filter .14s,box-shadow .14s}
+.rhythm-console{width:100%;max-width:820px;padding:clamp(20px,4vw,34px);margin:0 auto}
+.rhythm-console-heading{padding-bottom:17px;border-bottom:1px solid #ffffff14}
+.rhythm-console-heading h3{font-size:22px}
+.rhythm-category-tabs{margin-top:10px}
+.rhythm-category-tab{font-size:13px}
+.rhythm-select{font-family:inherit}
+.tempo-control{margin-top:14px}
+.rhythm-actions{margin-top:22px}
+.rhythm-play-along{margin-top:18px}
+.drum-now-playing{min-height:47px;display:flex;align-items:center;justify-content:center;margin:0;padding:12px 16px;border:1px solid #34475e;border-radius:12px;background:#111d2d;color:#f2d49a;text-align:center}
+.drum-note{margin:0;padding:13px 16px;color:#aebdd0;font-size:12px;line-height:1.8}
+.disclaimer{margin-top:23px}
+footer{max-width:none;width:100%;padding:23px max(24px,calc((100vw - 1180px)/2));border-top:1px solid #ffffff12;color:#91a2b8;font-size:12px}
+button,select,input{font:inherit}
+button{touch-action:manipulation}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+@media(max-width:900px){
+  .topbar{flex-wrap:wrap;justify-content:space-between;gap:12px;padding:12px 22px}
+  .main-nav{order:3;width:100%;justify-content:stretch}
+  .main-nav .nav-link{flex:1}
+  .top-note{margin-inline-start:auto}
+  .workspace{grid-template-columns:minmax(0,1fr) minmax(270px,.8fr);gap:15px}
+  .strings-panel{position:static}
+  .instrument-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .maqam-layout{grid-template-columns:1fr}
+}
+@media(max-width:680px){
+  html{scroll-padding-top:130px}
+  .page{width:min(100% - 28px,560px);padding:24px 0 48px}
+  .topbar{padding:10px 14px}
+  .brand small{font-size:9px}
+  .top-note{display:none}
+  .main-nav{gap:4px;padding:4px}
+  .nav-link{min-height:40px;padding:8px 5px;font-size:12px}
+  .intro{margin-bottom:20px;padding:17px 8px 20px}
+  .intro h1{font-size:clamp(30px,9vw,43px)}
+  .lead{font-size:13px}
+  .workspace{grid-template-columns:1fr;gap:14px}
+  .panel{padding:18px;border-radius:18px}
+  .panel-head{align-items:flex-start}
+  .instrument-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+  .instrument{min-height:82px;padding:8px 2px}
+  .instrument-icon{width:31px;height:31px;font-size:14px}
+  .instrument b{font-size:9px;line-height:1.35}
+  .strings-panel{order:2}
+  .info-grid{grid-template-columns:1fr;gap:10px;margin-top:16px}
+  .info-card{min-height:0;padding:17px}
+  .maqam-section,.drums-section{gap:14px}
+  .maqam-heading,.drums-heading{padding:20px 17px;border-radius:17px}
+  .maqam-heading h2,.drums-heading h2{font-size:23px}
+  .maqam-controls,.piano-panel,.scale-details{padding:17px;border-radius:17px}
+  .piano-topline{align-items:flex-start;flex-direction:column}
+  .drum-machine{padding:15px;border-radius:17px}
+  .drum-pads{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  #drumPads .drum-pad{min-height:125px;padding:15px 7px 12px}
+  #drumPads .drum-pad strong{font-size:20px}
+  #drumPads .drum-pad small{font-size:10px}
+  .rhythm-console{padding:18px;border-radius:17px}
+  .rhythm-console-heading{align-items:flex-start;flex-direction:column;gap:9px}
+  .rhythm-category-tabs{gap:5px}
+  .rhythm-category-tab{padding:9px 5px;font-size:11px}
+  .rhythm-actions button{flex:1;padding-inline:9px}
+  .rhythm-beat{width:100%;margin:0;text-align:center}
+  footer{padding:18px 15px;gap:12px;flex-wrap:wrap;justify-content:center;text-align:center}
+}
+@media(max-width:380px){
+  .page{width:calc(100% - 20px)}
+  .instrument-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .instrument b{font-size:10px}
+  .panel-head{flex-direction:column}
+  .rhythm-category-tab{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
