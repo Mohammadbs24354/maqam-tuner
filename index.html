@@ -20,6 +20,7 @@
       <button type="button" class="nav-link active" data-page="tunerPage" aria-current="page">موالف الآلات</button>
       <button type="button" class="nav-link" data-page="maqamPage">المقامات</button>
       <button type="button" class="nav-link" data-page="drumsPage">الدرامز</button>
+      <button type="button" class="nav-link" data-page="effectsPage">أصوات الطبيعة</button>
     </nav>
     <span class="top-note"><span class="live-dot"></span> استمع، اضبط، واعزف</span>
   </header>
@@ -214,6 +215,33 @@
         </section>
         <p id="drumNowPlaying" class="drum-now-playing" aria-live="polite">اختر صوتاً للعزف أو شغّل إيقاعاً جاهزاً.</p>
         <p class="drum-note">الأصوات مولّدة داخل المتصفح ولا تحتاج إلى ملفات صوتية أو إذن الميكروفون. أوقف الإيقاع قبل مغادرة الصفحة.</p>
+      </section>
+    </div>
+    <div id="effectsPage" class="site-page" aria-label="صفحة أصوات الطبيعة والمؤثرات" hidden>
+      <section class="effects-section" aria-labelledby="effectsTitle">
+        <div class="effects-heading">
+          <span class="section-kicker">05 / المؤثرات الصوتية</span>
+          <h2 id="effectsTitle">أصوات الطبيعة والمؤثرات</h2>
+          <p>اضغط على أي بطاقة للاستماع إلى المؤثر فوراً. لا تحتاج هذه الصفحة إلى الميكروفون أو تحميل ملفات إضافية.</p>
+        </div>
+        <div class="effects-toolbar">
+          <label for="effectsVolume">مستوى الصوت</label>
+          <input id="effectsVolume" type="range" min="0" max="100" value="72" step="1">
+          <output id="effectsVolumeValue" for="effectsVolume">72%</output>
+        </div>
+        <div class="effects-grid" id="effectsGrid" aria-label="مكتبة المؤثرات الصوتية">
+          <button type="button" class="effect-card" data-effect="glassTap"><span class="effect-icon">🥂</span><span class="effect-copy"><strong>طرق الزجاج</strong><small>نقرات رنانة على سطح زجاجي</small></span><span class="effect-play" aria-hidden="true">▶</span></button>
+          <button type="button" class="effect-card" data-effect="crow"><span class="effect-icon">🐦‍⬛</span><span class="effect-copy"><strong>صوت الغراب</strong><small>نداءات غراب متقطعة</small></span><span class="effect-play" aria-hidden="true">▶</span></button>
+          <button type="button" class="effect-card" data-effect="leaves"><span class="effect-icon">🍃</span><span class="effect-copy"><strong>حفيف أوراق الشجر</strong><small>أوراق تتحرك مع نسيم خفيف</small></span><span class="effect-play" aria-hidden="true">▶</span></button>
+          <button type="button" class="effect-card" data-effect="sea"><span class="effect-icon">🌊</span><span class="effect-copy"><strong>أمواج البحر</strong><small>موجة ترتفع ثم تنحسر</small></span><span class="effect-play" aria-hidden="true">▶</span></button>
+          <button type="button" class="effect-card" data-effect="glassBreak"><span class="effect-icon">💥</span><span class="effect-copy"><strong>كسر الزجاج</strong><small>اصطدام وتناثر شظايا زجاجية</small></span><span class="effect-play" aria-hidden="true">▶</span></button>
+          <button type="button" class="effect-card" data-effect="thunder"><span class="effect-icon">⛈️</span><span class="effect-copy"><strong>البرق والرعد</strong><small>وميض يتبعه دوي رعد عميق</small></span><span class="effect-play" aria-hidden="true">▶</span></button>
+          <button type="button" class="effect-card" data-effect="gunshot"><span class="effect-icon">🔊</span><span class="effect-copy"><strong>إطلاق نار</strong><small>مؤثر صوتي سينمائي قصير</small></span><span class="effect-play" aria-hidden="true">▶</span></button>
+          <button type="button" class="effect-card" data-effect="wind"><span class="effect-icon">💨</span><span class="effect-copy"><strong>صوت الرياح</strong><small>هبوب هواء متدرج</small></span><span class="effect-play" aria-hidden="true">▶</span></button>
+          <button type="button" class="effect-card" data-effect="rain"><span class="effect-icon">🌧️</span><span class="effect-copy"><strong>صوت المطر</strong><small>هطول مطر مع قطرات متفرقة</small></span><span class="effect-play" aria-hidden="true">▶</span></button>
+        </div>
+        <p id="effectsStatus" class="effects-status" role="status" aria-live="polite">اختر مؤثراً صوتياً للاستماع إليه.</p>
+        <p class="effects-note">ملاحظة: هذه النسخة تستخدم مؤثرات مولّدة إلكترونياً عبر Web Audio API، وليست تسجيلات ميدانية أصلية. قد تختلف النتيجة قليلاً حسب المتصفح والسماعات.</p>
       </section>
     </div>
     <section class="disclaimer tuner-disclaimer"><b>ملاحظة حول الضبط الشرقي</b><p>العود والبزق والكمان الشرقي لها مدارس وتقاليد متعددة، وقد يختلف عدد الأوتار والتردد المرجعي بحسب المنطقة والعازف. الأنماط المعروضة نقطة بداية شائعة وليست معياراً موحداً؛ استخدم الإعداد المخصص وعدّل الترددات وفق مرجع أستاذك أو فرقتك.</p></section>
