@@ -227,11 +227,20 @@
     const labels={1:"ربع تون",2:"نصف تون",3:"ثلاثة أرباع تون",4:"تون كامل",5:"تون وربع",6:"تون ونصف",7:"تون وثلاثة أرباع",8:"تونان"};
     return labels[q]||((q/2)+" تون");
   }
+  let maqamOctaveShift=0;
+  const MIN_MAQAM_OCTAVE=-2,MAX_MAQAM_OCTAVE=2;
   function getMaqamData(){
     const m=maqams[$("maqamSelect").value];
     const selected=$("maqamRoot").value;
-    const root=selected===""?m.root:Number(selected);
+    const baseRoot=selected===""?m.root:Number(selected);
+    const root=baseRoot+(maqamOctaveShift*12);
     return {...m,root,labels:root===m.root?m.labels:null,notes:m.steps.map(q=>root+q/2)};
+  }
+  function updateMaqamOctaveControls(root){
+    const octave=Math.floor(root/12)-1;
+    $("maqamOctaveLabel").textContent="الأوكتاف "+octave;
+    $("octaveUp").disabled=maqamOctaveShift>=MAX_MAQAM_OCTAVE;
+    $("octaveDown").disabled=maqamOctaveShift<=MIN_MAQAM_OCTAVE;
   }
   const heldPianoNotes=new Map();
   const releasedPianoKeys=new Set();
@@ -341,6 +350,7 @@
     const data=getMaqamData(),keyboard=$("pianoKeyboard");
     keyboard.innerHTML="";
     $("pianoMaqamName").textContent="مقام "+data.name+" · "+noteName(data.root);
+    updateMaqamOctaveControls(data.root);
     $("maqamDescription").textContent=data.desc;
     keyboard.className="maqam-note-grid";
     keyboard.setAttribute("aria-label","درجات مقام "+data.name);
@@ -429,6 +439,8 @@
     $("maqamSelect").addEventListener("change",()=>{stopScalePlayback();updateRootDefault();buildPiano();});
     select.addEventListener("change",()=>{stopScalePlayback();buildPiano();});
     $("maqamVoice").addEventListener("change",()=>{stopScalePlayback();updateMaqamVoiceSource();buildPiano();$("pianoNowPlaying").textContent="تم تغيير صوت الآلة إلى "+maqamVoices[$("maqamVoice").value].name+".";});
+    $("octaveUp").addEventListener("click",()=>{if(maqamOctaveShift>=MAX_MAQAM_OCTAVE)return;stopScalePlayback();maqamOctaveShift++;buildPiano();});
+    $("octaveDown").addEventListener("click",()=>{if(maqamOctaveShift<=MIN_MAQAM_OCTAVE)return;stopScalePlayback();maqamOctaveShift--;buildPiano();});
     $("playScale").addEventListener("click",playFullScale);$("stopScale").addEventListener("click",stopScalePlayback);
     updateRootDefault();updateMaqamVoiceSource();buildPiano();
   }
