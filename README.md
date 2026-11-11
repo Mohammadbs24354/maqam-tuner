@@ -122,7 +122,7 @@ node --check app.js
 node tests/smoke.test.js
 ```
 
-The tests cover JavaScript syntax, pitch detection against generated test tones, silence handling, quarter-tone naming, HTML IDs and navigation targets, instrument and rhythm configuration, bundled audio-file presence, octave controls, sound-effect controls, and selected accessibility/responsive-style safeguards.
+The tests cover JavaScript syntax, pitch detection against generated test tones, silence handling, quarter-tone naming, HTML IDs and navigation targets, instrument and rhythm configuration, bundled audio-file presence, octave controls, licensed sound-effect source mapping and playback controls, and selected accessibility/responsive-style safeguards.
 
 These are automated source-level and algorithm tests. They do **not** replace real-browser testing of microphone permissions, audio playback, device compatibility, latency, or visual rendering.
 
@@ -154,7 +154,7 @@ These are automated source-level and algorithm tests. They do **not** replace re
 
 - index.html contains the page structure and Arabic UI.
 - styles.css contains the visual system and responsive layouts.
-- app.js contains tuner logic, maqam playback, sample loading, drum synthesis, rhythm scheduling, sound-effect synthesis, and navigation.
+- app.js contains tuner logic, maqam playback, sample loading, drum synthesis, rhythm scheduling, licensed sound-effect playback, and navigation.
 - assets/audio contains the recorded instrument samples and their attribution details.
 - tests/smoke.test.js contains the Node.js smoke tests.
 - .github/workflows/deploy.yml validates the JavaScript, runs the tests, and deploys the site to GitHub Pages on pushes to main.
