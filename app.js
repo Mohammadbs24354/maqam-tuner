@@ -287,6 +287,17 @@
 
 
 
+  const drumNames={dum:"دُم",tak:"تَك",daf:"دَف",riq:"رَق",clap:"تصفيق",cymbal:"صَنج",snare:"سنير",bass:"باس",slap:"صفعة",sagat:"صاجات",shaker:"شيكر",tom:"توم"};
+  const drumKeys={dum:"1",tak:"2",daf:"3",riq:"4",clap:"5",cymbal:"6",snare:"7",bass:"8",slap:"9",sagat:"0",shaker:"Q",tom:"W"};
+  const rhythmPatterns={
+    maqsum:{name:"مقسوم",description:"إيقاع شرقي رباعي شائع",steps:{0:["dum"],3:["tak"],4:["tak"],6:["dum"],8:["dum"],11:["tak"],12:["tak"],14:["dum"]}},
+    baladi:{name:"بلدي",description:"إيقاع بلدي بأربع نبضات",steps:{0:["dum"],2:["tak"],4:["dum"],6:["tak"],8:["dum"],10:["tak"],12:["dum"],14:["tak"]}},
+    malfuf:{name:"ملفوف",description:"إيقاع سريع بحركة ثنائية",steps:{0:["dum"],2:["tak"],4:["tak"],6:["dum"],8:["tak"],10:["tak"],12:["dum"],14:["tak"]}},
+    saidi:{name:"صعيدي",description:"إيقاع صعيدي قوي",steps:{0:["dum"],2:["tak"],4:["dum"],6:["tak"],8:["dum"],10:["dum"],12:["tak"],14:["tak"]}},
+    wahda:{name:"وحدة كبيرة",description:"إيقاع هادئ بأربع نبضات",steps:{0:["dum"],4:["tak"],8:["dum"],12:["tak"]}}
+  };
+  let drumAudioContext=null;
+  const rhythmState={timer:null,nextStep:0,nextTime:0,bpm:100,playing:false,pattern:"maqsum"};
   function getDrumContext(){
     const AudioCtx=window.AudioContext||window.webkitAudioContext;
     if(!AudioCtx)throw new Error("Web Audio API غير مدعوم في هذا المتصفح");
@@ -312,64 +323,139 @@
     amp.gain.exponentialRampToValueAtTime(.0001,at+duration);
     osc.connect(amp);amp.connect(output);osc.start(at);osc.stop(at+duration+.01);
   }
-  function playDrumSound(ctx,type){
-    const now=ctx.currentTime,master=ctx.createGain(),compressor=ctx.createDynamicsCompressor();
-    master.gain.setValueAtTime(.85,now);
-    compressor.threshold.setValueAtTime(-8,now);compressor.knee.setValueAtTime(12,now);
-    compressor.ratio.setValueAtTime(5,now);compressor.attack.setValueAtTime(.003,now);compressor.release.setValueAtTime(.15,now);
+  function playDrumSound(ctx,type,at=ctx.currentTime){
+    const master=ctx.createGain(),compressor=ctx.createDynamicsCompressor();
+    master.gain.setValueAtTime(.82,at);
+    compressor.threshold.setValueAtTime(-8,at);compressor.knee.setValueAtTime(12,at);
+    compressor.ratio.setValueAtTime(5,at);compressor.attack.setValueAtTime(.003,at);compressor.release.setValueAtTime(.15,at);
     master.connect(compressor);compressor.connect(ctx.destination);
-    if(type==="dum"){
-      drumTone(ctx,master,{start:155,end:48,duration:.28,level:.95});
-      drumNoise(ctx,master,{duration:.045,filter:"lowpass",frequency:700,level:.22,decay:.035});
-    }else if(type==="tak"){
-      drumNoise(ctx,master,{duration:.12,filter:"bandpass",frequency:2100,level:.9,decay:.09});
-      drumTone(ctx,master,{start:260,end:125,duration:.07,level:.18});
+    if(type==="dum"||type==="bass"){
+      drumTone(ctx,master,{start:type==="bass"?105:155,end:type==="bass"?38:48,duration:.3,level:.95,at});
+      drumNoise(ctx,master,{duration:.05,filter:"lowpass",frequency:650,level:.2,decay:.04,at});
+    }else if(type==="tak"||type==="snare"){
+      drumNoise(ctx,master,{duration:.13,filter:"bandpass",frequency:type==="snare"?1750:2300,level:.85,decay:.1,at});
+      drumTone(ctx,master,{start:270,end:125,duration:.07,level:.16,at});
     }else if(type==="daf"){
-      drumTone(ctx,master,{start:118,end:75,duration:.24,level:.62});
-      drumNoise(ctx,master,{duration:.24,filter:"bandpass",frequency:950,level:.55,decay:.21});
+      drumTone(ctx,master,{start:118,end:75,duration:.24,level:.62,at});
+      drumNoise(ctx,master,{duration:.24,filter:"bandpass",frequency:950,level:.55,decay:.21,at});
     }else if(type==="riq"){
-      drumNoise(ctx,master,{duration:.34,filter:"highpass",frequency:5600,level:.8,decay:.32});
-      [2350,3190,4170,5280].forEach((f,i)=>drumTone(ctx,master,{start:f,end:f*.985,duration:.22,level:.12,wave:"square"}));
+      drumNoise(ctx,master,{duration:.34,filter:"highpass",frequency:5600,level:.8,decay:.32,at});
+      [2350,3190,4170,5280].forEach(f=>drumTone(ctx,master,{start:f,end:f*.985,duration:.22,level:.12,wave:"square",at}));
     }else if(type==="clap"){
-      [0,.025,.052].forEach((offset,i)=>drumNoise(ctx,master,{duration:.1,filter:"bandpass",frequency:1350,level:i===2?.62:.42,decay:.075,at:now+offset}));
+      [0,.025,.052].forEach((offset,i)=>drumNoise(ctx,master,{duration:.1,filter:"bandpass",frequency:1350,level:i===2?.62:.42,decay:.075,at:at+offset}));
     }else if(type==="cymbal"){
-      drumNoise(ctx,master,{duration:.8,filter:"highpass",frequency:7600,level:.72,decay:.78});
-      [1730,2410,3190,4020,5180].forEach((f,i)=>drumTone(ctx,master,{start:f,end:f*.997,duration:.55,level:.055,wave:"square"}));
+      drumNoise(ctx,master,{duration:.8,filter:"highpass",frequency:7600,level:.72,decay:.78,at});
+      [1730,2410,3190,4020,5180].forEach(f=>drumTone(ctx,master,{start:f,end:f*.997,duration:.55,level:.055,wave:"square",at}));
+    }else if(type==="slap"){
+      drumTone(ctx,master,{start:210,end:95,duration:.11,level:.65,wave:"triangle",at});
+      drumNoise(ctx,master,{duration:.07,filter:"bandpass",frequency:1250,level:.7,decay:.06,at});
+    }else if(type==="sagat"){
+      [3100,3900,4700,5600].forEach(f=>drumTone(ctx,master,{start:f,end:f*.99,duration:.16,level:.09,wave:"square",at}));
+      drumNoise(ctx,master,{duration:.18,filter:"highpass",frequency:6500,level:.35,decay:.16,at});
+    }else if(type==="shaker"){
+      drumNoise(ctx,master,{duration:.16,filter:"highpass",frequency:4200,level:.42,decay:.14,at});
+    }else if(type==="tom"){
+      drumTone(ctx,master,{start:230,end:105,duration:.25,level:.72,wave:"sine",at});
     }
   }
+  function setDrumStatus(message){const status=$("drumNowPlaying");if(status)status.textContent=message;}
+  function flashDrumPad(type){
+    const pad=document.querySelector('.drum-pad[data-drum="'+type+'"]');
+    if(!pad)return;
+    pad.classList.add("is-hit");
+    window.setTimeout(()=>pad.classList.remove("is-hit"),110);
+  }
+  async function triggerDrum(type){
+    try{
+      const ctx=getDrumContext();
+      if(ctx.state!=="running")await ctx.resume();
+      if(ctx.state!=="running")throw new Error("لم يتم تفعيل الصوت؛ اضغط مرة أخرى أو تحقق من إعدادات الصوت");
+      playDrumSound(ctx,type);flashDrumPad(type);
+      setDrumStatus("يُعزف الآن: "+drumNames[type]);
+    }catch(error){setDrumStatus("تعذر تشغيل الصوت: "+(error.message||"تحقق من إعدادات الصوت والمتصفح"));}
+  }
+  function updateRhythmControls(){
+    const start=$("rhythmStart"),stop=$("rhythmStop"),label=$("rhythmPlayState");
+    if(start)start.disabled=rhythmState.playing;
+    if(stop)stop.disabled=!rhythmState.playing;
+    if(label)label.textContent=rhythmState.playing?"الإيقاع يعمل الآن":"الإيقاع متوقف";
+  }
+  function scheduleRhythmStep(ctx){
+    const pattern=rhythmPatterns[rhythmState.pattern],hits=pattern.steps[rhythmState.nextStep]||[];
+    hits.forEach(type=>{playDrumSound(ctx,type,rhythmState.nextTime);flashDrumPad(type);});
+    const stepDuration=60/rhythmState.bpm/4;
+    rhythmState.nextTime+=stepDuration;
+    rhythmState.nextStep=(rhythmState.nextStep+1)%16;
+    const beat=Math.floor((rhythmState.nextStep+3)%16/4)+1;
+    const beatEl=$("rhythmBeat");
+    if(beatEl)beatEl.textContent="النبضة "+(beat===0?4:beat)+" / 4";
+  }
+  async function startRhythm(){
+    try{
+      const ctx=getDrumContext();
+      if(ctx.state!=="running")await ctx.resume();
+      if(ctx.state!=="running")throw new Error("تعذر تفعيل الصوت");
+      if(rhythmState.playing)return;
+      rhythmState.pattern=$("rhythmSelect").value;
+      rhythmState.bpm=Number($("rhythmTempo").value)||100;
+      rhythmState.nextStep=0;rhythmState.nextTime=ctx.currentTime+.06;rhythmState.playing=true;
+      const lookAhead=()=>{
+        if(!rhythmState.playing)return;
+        while(rhythmState.nextTime<ctx.currentTime+.12)scheduleRhythmStep(ctx);
+      };
+      lookAhead();rhythmState.timer=window.setInterval(lookAhead,25);
+      updateRhythmControls();
+      setDrumStatus("يعمل الآن: "+rhythmPatterns[rhythmState.pattern].name+" · "+rhythmState.bpm+" BPM");
+    }catch(error){setDrumStatus("تعذر تشغيل الإيقاع: "+(error.message||"تحقق من إعدادات الصوت"));}
+  }
+  function stopRhythm(){
+    rhythmState.playing=false;
+    if(rhythmState.timer!==null){window.clearInterval(rhythmState.timer);rhythmState.timer=null;}
+    updateRhythmControls();
+    const beat=$("rhythmBeat");if(beat)beat.textContent="جاهز";
+    setDrumStatus("تم إيقاف الإيقاع. يمكنك اختيار إيقاع آخر أو العزف الحر.");
+  }
+
+    document.querySelectorAll("[data-drum-mode]").forEach(button=>{
+      button.addEventListener("click",()=>{
+        const ready=button.dataset.drumMode==="ready";
+        document.querySelectorAll("[data-drum-mode]").forEach(tab=>{
+          const active=tab===button;tab.classList.toggle("active",active);tab.setAttribute("aria-selected",String(active));
+        });
+        $("freeDrumMode").hidden=ready;
+        $("readyDrumMode").hidden=!ready;
+      });
+    });
+
   function initDrumPads(){
-    const pads=$("drumPads");
-    if(!pads)return;
-    const names={dum:"دُم",tak:"تَك",daf:"دَف",riq:"رَق",clap:"تصفيق",cymbal:"صَنج"};
-    let lastPad=null;
-    async function trigger(pad){
-      try{
-        const ctx=getDrumContext();
-        if(ctx.state!=="running")await ctx.resume();
-        if(ctx.state!=="running")throw new Error("لم يتم تفعيل الصوت؛ اضغط مرة أخرى أو تحقق من إعدادات الصوت");
-        playDrumSound(ctx,pad.dataset.drum);
-        pads.querySelectorAll(".drum-pad").forEach(item=>item.classList.remove("is-hit"));
-        pad.classList.add("is-hit");lastPad=pad;
-        $("drumNowPlaying").textContent="يُعزف الآن: "+names[pad.dataset.drum];
-        window.setTimeout(()=>{if(lastPad===pad)pad.classList.remove("is-hit");},150);
-      }catch(error){
-        $("drumNowPlaying").textContent="تعذر تشغيل الصوت: "+(error.message||"تحقق من إعدادات الصوت والمتصفح");
-      }
-    }
+    const pads=$("drumPads");if(!pads)return;
     pads.addEventListener("click",event=>{
       const pad=event.target.closest(".drum-pad[data-drum]");
-      if(pad)trigger(pad);
+      if(pad)triggerDrum(pad.dataset.drum);
     });
     document.addEventListener("keydown",event=>{
       if(event.repeat||event.ctrlKey||event.altKey||event.metaKey)return;
       const active=document.activeElement;
       if(active&&(/INPUT|TEXTAREA|SELECT/.test(active.tagName)||active.isContentEditable))return;
-      const keyMap={"1":"dum","2":"tak","3":"daf","4":"riq","5":"clap","6":"cymbal"};
-      const type=keyMap[event.key];
-      if(!type)return;
-      const pad=pads.querySelector('.drum-pad[data-drum="'+type+'"]');
-      if(pad){event.preventDefault();trigger(pad);}
+      const type=Object.keys(drumKeys).find(key=>drumKeys[key].toLowerCase()===event.key.toLowerCase());
+      if(type){event.preventDefault();triggerDrum(type);}
+      if(event.code==="Space"&&rhythmState.playing){event.preventDefault();stopRhythm();}
     });
+    $("rhythmTempo").addEventListener("input",event=>{
+      rhythmState.bpm=Number(event.target.value);
+      $("rhythmTempoValue").textContent=rhythmState.bpm+" BPM";
+      if(rhythmState.playing){
+        const ctx=getDrumContext();rhythmState.nextTime=Math.max(rhythmState.nextTime,ctx.currentTime+.03);
+      }
+    });
+    $("rhythmSelect").addEventListener("change",event=>{
+      rhythmState.pattern=event.target.value;
+      $("rhythmDescription").textContent=rhythmPatterns[rhythmState.pattern].description;
+      if(rhythmState.playing){stopRhythm();startRhythm();}
+    });
+    $("rhythmStart").addEventListener("click",startRhythm);
+    $("rhythmStop").addEventListener("click",stopRhythm);
+    updateRhythmControls();
   }
 
   function initNavigation(){
@@ -395,6 +481,7 @@
       });
 
       if(target==="maqamPage")buildPiano();
+      if(target!=="drumsPage"&&rhythmState.playing)stopRhythm();
       if(shouldScroll)window.scrollTo({top:0,behavior:"smooth"});
       return true;
     }
