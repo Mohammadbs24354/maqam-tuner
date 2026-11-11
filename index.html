@@ -168,12 +168,29 @@
           <div class="rhythm-console">
             <div class="rhythm-console-heading"><div><span class="section-kicker">مشغّل الإيقاعات</span><h3>اختر الإيقاع واعزف معه</h3></div><span id="rhythmPlayState" class="rhythm-state">الإيقاع متوقف</span></div>
             <label class="rhythm-field" for="rhythmSelect">نوع الإيقاع</label>
+            <div class="rhythm-category-tabs" role="group" aria-label="تصنيف الإيقاعات">
+              <button type="button" class="rhythm-category-tab active" data-rhythm-category="eastern" aria-pressed="true">الإيقاعات الشرقية</button>
+              <button type="button" class="rhythm-category-tab" data-rhythm-category="western" aria-pressed="false">الإيقاعات الغربية</button>
+            </div>
             <select id="rhythmSelect" class="rhythm-select">
-              <option value="maqsum">مقسوم · 4/4</option>
-              <option value="baladi">بلدي · 4/4</option>
-              <option value="malfuf">ملفوف · 2/4</option>
-              <option value="saidi">صعيدي · 4/4</option>
-              <option value="wahda">وحدة كبيرة · 4/4</option>
+              <optgroup label="الإيقاعات الشرقية" data-rhythm-group="eastern">
+                <option value="maqsum">مقسوم · 4/4</option>
+                <option value="baladi">بلدي · 4/4</option>
+                <option value="malfuf">ملفوف · 2/4</option>
+                <option value="saidi">صعيدي · 4/4</option>
+                <option value="wahda">وحدة كبيرة · 4/4</option>
+              </optgroup>
+              <optgroup label="الإيقاعات الغربية" data-rhythm-group="western" hidden>
+                <option value="jazzSwing">جاز سوينغ · ثلاثي</option>
+                <option value="bluesShuffle">بلوز شافل · ثلاثي</option>
+                <option value="house">هاوس · 4/4</option>
+                <option value="deepHouse">ديب هاوس · 4/4</option>
+                <option value="disco">ديسكو · 4/4</option>
+                <option value="rock">روك · 4/4</option>
+                <option value="funk">فانك · 4/4</option>
+                <option value="reggae">ريغي · 4/4</option>
+                <option value="bossaNova">بوسا نوفا · 4/4</option>
+              </optgroup>
             </select>
             <p id="rhythmDescription" class="rhythm-description">إيقاع شرقي رباعي شائع</p>
             <div class="tempo-control">
