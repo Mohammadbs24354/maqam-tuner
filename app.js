@@ -289,59 +289,85 @@
 
   function getDrumContext(){
     const AudioCtx=window.AudioContext||window.webkitAudioContext;
-    if(!AudioCtx)throw new Error("المتصفح لا يدعم تشغيل الصوت.");
-    if(!drumAudioContext)drumAudioContext=new AudioCtx();
-    if(drumAudioContext.state==="suspended")drumAudioContext.resume();
+    if(!AudioCtx)throw new Error("Web Audio API غير مدعوم في هذا المتصفح");
+    if(!drumAudioContext||drumAudioContext.state==="closed")drumAudioContext=new AudioCtx();
     return drumAudioContext;
   }
-  function makeDrumNoise(ctx,duration){
+  function drumNoise(ctx,output,{duration=.12,filter="highpass",frequency=1200,level=.4,decay=.1,at=ctx.currentTime}={}){
     const length=Math.max(1,Math.floor(ctx.sampleRate*duration));
-    const buffer=ctx.createBuffer(1,length,ctx.sampleRate),data=buffer.getChannelData(0);
-    for(let i=0;i<length;i++)data[i]=Math.random()*2-1;
-    const source=ctx.createBufferSource();source.buffer=buffer;return source;
+    const buffer=ctx.createBuffer(1,length,ctx.sampleRate),samples=buffer.getChannelData(0);
+    for(let i=0;i<length;i++)samples[i]=(Math.random()*2-1)*(1-i/length*.18);
+    const source=ctx.createBufferSource(),filterNode=ctx.createBiquadFilter(),amp=ctx.createGain();
+    source.buffer=buffer;filterNode.type=filter;filterNode.frequency.setValueAtTime(frequency,at);
+    amp.gain.setValueAtTime(Math.max(.0001,level),at);
+    amp.gain.exponentialRampToValueAtTime(.0001,at+Math.max(.015,decay));
+    source.connect(filterNode);filterNode.connect(amp);amp.connect(output);
+    source.start(at);source.stop(at+duration);
   }
-  function playDrumSound(type){
-    const ctx=getDrumContext(),now=ctx.currentTime;
-    const gain=ctx.createGain();gain.connect(ctx.destination);
-    const noise=(duration,frequency,filterType,level,decay)=>{
-      const source=makeDrumNoise(ctx,duration),filter=ctx.createBiquadFilter(),amp=ctx.createGain();
-      filter.type=filterType;filter.frequency.setValueAtTime(frequency,now);
-      amp.gain.setValueAtTime(level,now);amp.gain.exponentialRampToValueAtTime(.001,now+decay);
-      source.connect(filter);filter.connect(amp);amp.connect(gain);source.start(now);source.stop(now+duration);
-    };
-    const tone=(start,end,duration,level)=>{
-      const osc=ctx.createOscillator(),amp=ctx.createGain();osc.type="sine";
-      osc.frequency.setValueAtTime(start,now);osc.frequency.exponentialRampToValueAtTime(Math.max(1,end),now+duration);
-      amp.gain.setValueAtTime(level,now);amp.gain.exponentialRampToValueAtTime(.001,now+duration);
-      osc.connect(amp);amp.connect(gain);osc.start(now);osc.stop(now+duration);
-    };
-    if(type==="dum"){tone(145,48,.24,.9);noise(.055,900,"lowpass",.22,.045);}
-    else if(type==="tak"){noise(.105,1850,"bandpass",.8,.085);tone(240,130,.055,.12);}
-    else if(type==="daf"){tone(105,72,.19,.48);noise(.22,1100,"bandpass",.45,.2);}
-    else if(type==="riq"){noise(.32,7200,"highpass",.65,.3);noise(.18,3900,"highpass",.28,.17);}
-    else if(type==="clap"){[0,.028,.056].forEach((offset,index)=>{const source=makeDrumNoise(ctx,.09),filter=ctx.createBiquadFilter(),amp=ctx.createGain();filter.type="bandpass";filter.frequency.value=1250;amp.gain.setValueAtTime(index===2?.35:.55,now+offset);amp.gain.exponentialRampToValueAtTime(.001,now+offset+.075);source.connect(filter);filter.connect(amp);amp.connect(gain);source.start(now+offset);source.stop(now+offset+.09);});}
-    else if(type==="cymbal"){noise(.85,8200,"highpass",.58,.82);noise(.55,5200,"highpass",.2,.52);}
+  function drumTone(ctx,output,{start=120,end=60,duration=.2,level=.6,wave="sine",at=ctx.currentTime}={}){
+    const osc=ctx.createOscillator(),amp=ctx.createGain();
+    osc.type=wave;osc.frequency.setValueAtTime(Math.max(1,start),at);
+    osc.frequency.exponentialRampToValueAtTime(Math.max(1,end),at+duration);
+    amp.gain.setValueAtTime(Math.max(.0001,level),at);
+    amp.gain.exponentialRampToValueAtTime(.0001,at+duration);
+    osc.connect(amp);amp.connect(output);osc.start(at);osc.stop(at+duration+.01);
+  }
+  function playDrumSound(ctx,type){
+    const now=ctx.currentTime,master=ctx.createGain(),compressor=ctx.createDynamicsCompressor();
+    master.gain.setValueAtTime(.85,now);
+    compressor.threshold.setValueAtTime(-8,now);compressor.knee.setValueAtTime(12,now);
+    compressor.ratio.setValueAtTime(5,now);compressor.attack.setValueAtTime(.003,now);compressor.release.setValueAtTime(.15,now);
+    master.connect(compressor);compressor.connect(ctx.destination);
+    if(type==="dum"){
+      drumTone(ctx,master,{start:155,end:48,duration:.28,level:.95});
+      drumNoise(ctx,master,{duration:.045,filter:"lowpass",frequency:700,level:.22,decay:.035});
+    }else if(type==="tak"){
+      drumNoise(ctx,master,{duration:.12,filter:"bandpass",frequency:2100,level:.9,decay:.09});
+      drumTone(ctx,master,{start:260,end:125,duration:.07,level:.18});
+    }else if(type==="daf"){
+      drumTone(ctx,master,{start:118,end:75,duration:.24,level:.62});
+      drumNoise(ctx,master,{duration:.24,filter:"bandpass",frequency:950,level:.55,decay:.21});
+    }else if(type==="riq"){
+      drumNoise(ctx,master,{duration:.34,filter:"highpass",frequency:5600,level:.8,decay:.32});
+      [2350,3190,4170,5280].forEach((f,i)=>drumTone(ctx,master,{start:f,end:f*.985,duration:.22,level:.12,wave:"square"}));
+    }else if(type==="clap"){
+      [0,.025,.052].forEach((offset,i)=>drumNoise(ctx,master,{duration:.1,filter:"bandpass",frequency:1350,level:i===2?.62:.42,decay:.075,at:now+offset}));
+    }else if(type==="cymbal"){
+      drumNoise(ctx,master,{duration:.8,filter:"highpass",frequency:7600,level:.72,decay:.78});
+      [1730,2410,3190,4020,5180].forEach((f,i)=>drumTone(ctx,master,{start:f,end:f*.997,duration:.55,level:.055,wave:"square"}));
+    }
   }
   function initDrumPads(){
     const pads=$("drumPads");
     if(!pads)return;
     const names={dum:"دُم",tak:"تَك",daf:"دَف",riq:"رَق",clap:"تصفيق",cymbal:"صَنج"};
-    function trigger(pad){
+    let lastPad=null;
+    async function trigger(pad){
       try{
-        playDrumSound(pad.dataset.drum);
-        pad.classList.remove("is-hit");void pad.offsetWidth;pad.classList.add("is-hit");
-        $("drumNowPlaying").textContent="يعزف الآن: "+names[pad.dataset.drum];
-      }catch(error){$("drumNowPlaying").textContent="تعذر تشغيل الصوت. جرّب متصفحاً يدعم Web Audio.";}
+        const ctx=getDrumContext();
+        if(ctx.state!=="running")await ctx.resume();
+        if(ctx.state!=="running")throw new Error("لم يتم تفعيل الصوت؛ اضغط مرة أخرى أو تحقق من إعدادات الصوت");
+        playDrumSound(ctx,pad.dataset.drum);
+        pads.querySelectorAll(".drum-pad").forEach(item=>item.classList.remove("is-hit"));
+        pad.classList.add("is-hit");lastPad=pad;
+        $("drumNowPlaying").textContent="يُعزف الآن: "+names[pad.dataset.drum];
+        window.setTimeout(()=>{if(lastPad===pad)pad.classList.remove("is-hit");},150);
+      }catch(error){
+        $("drumNowPlaying").textContent="تعذر تشغيل الصوت: "+(error.message||"تحقق من إعدادات الصوت والمتصفح");
+      }
     }
     pads.addEventListener("click",event=>{
-      const pad=event.target.closest("[data-drum]");
+      const pad=event.target.closest(".drum-pad[data-drum]");
       if(pad)trigger(pad);
     });
     document.addEventListener("keydown",event=>{
       if(event.repeat||event.ctrlKey||event.altKey||event.metaKey)return;
       const active=document.activeElement;
       if(active&&(/INPUT|TEXTAREA|SELECT/.test(active.tagName)||active.isContentEditable))return;
-      const pad=pads.querySelector('[data-drum="'+({1:"dum",2:"tak",3:"daf",4:"riq",5:"clap",6:"cymbal"}[event.key]||"")+'"]');
+      const keyMap={"1":"dum","2":"tak","3":"daf","4":"riq","5":"clap","6":"cymbal"};
+      const type=keyMap[event.key];
+      if(!type)return;
+      const pad=pads.querySelector('.drum-pad[data-drum="'+type+'"]');
       if(pad){event.preventDefault();trigger(pad);}
     });
   }
