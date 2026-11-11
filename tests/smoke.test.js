@@ -153,21 +153,24 @@ assert.match(app, /now-state\.lastAnalysisAt>=40/, "pitch detection should be th
 assert.match(app, /if\(token!==pianoState\.playbackToken\)\{voice\.stop\(\);return;\}/, "a late-loaded sample must not play after scale playback is stopped");
 assert.match(app, /playPianoNote\(midi,label,\.48,token\)/, "scale sequence cancellation token must reach note playback");
 
-const soundEffects=["glassTap","crow","leaves","sea","thunder","gunshot","wind","rain"];
+const soundEffects=["crow","forestBirds","rainforest","sea","stream","thunder","wind","rain"];
 for(const effect of soundEffects){
-  assert.match(html,new RegExp('data-effect="'+effect+'"'),"sound effects page should expose "+effect);
-  assert.match(app,new RegExp(effect+':\\{name:'),"sound effect should map to a real recording: "+effect);
+  assert.match(html,new RegExp('data-effect="'+effect+'"'),"nature page should expose "+effect);
+  assert.match(app,new RegExp(effect+':\\\\{name:'),"nature sound should map to a real field recording: "+effect);
 }
-assert.match(html,/id="effectsPage"/,"sound effects must have a dedicated navigable page");
-assert.match(html,/data-page="effectsPage"/,"sound effects page must be reachable from main navigation");
-assert.match(html,/id="effectsVolume"/,"sound effects must expose a volume control");
-assert.match(app,/function initSoundEffects\(/,"sound effects controls must be initialized");
-assert.match(app,/const effectLibrary=/,"sound effects must use a data-driven real-recording library");
-assert.match(app,/new Audio\(\)/,"sound effects must play actual audio files rather than generated tones");
-assert.match(app,/audio\.src=item\.url/,"each sound must load its licensed source file");
-assert.match(app,/function stopSoundEffect\(/,"the sound effects player must support stopping playback");
-assert.match(app,/currentEffectAudio\.volume=effectsVolumeValue/,"the volume control must affect active recordings");
+for(const removed of ["glassTap","leaves","gunshot"]) assert.doesNotMatch(html,new RegExp('data-effect="'+removed+'"'),"non-nature or misleading effect removed: "+removed);
+assert.match(html,/id="effectsPage"/,"nature sounds must have a dedicated navigable page");
+assert.match(html,/data-page="effectsPage"/,"nature sounds page must be reachable from main navigation");
+assert.match(html,/id="effectsVolume"/,"nature sounds must expose a volume control");
+assert.match(app,/function initSoundEffects\\(/,"nature sound controls must be initialized");
+assert.match(app,/const effectLibrary=/,"nature sounds must use a data-driven recording library");
+assert.match(app,/new Audio\\(\\)/,"nature sounds must play audio files rather than generated tones");
+assert.match(app,/audio\\.src=item\\.url/,"each sound must load its licensed source file");
+assert.match(app,/Special:Redirect\\/file\\//,"audio must use direct Wikimedia file redirects");
+assert.doesNotMatch(app,/effectNoise|effectTone|effectsBus/,"nature sounds must not be generated with Web Audio synthesis");
+assert.match(app,/function stopSoundEffect\\(/,"the nature sound player must support stopping playback");
+assert.match(app,/currentEffectAudio\\.volume=effectsVolumeValue/,"the volume control must affect active recordings");
 assert.match(html,/id="effectsStop"/,"the page must provide a stop control");
-assert.match(html,/id="effectsLoop"/,"the page must provide a loop control for ambience");
-assert.match(css,/\.effects-grid/,"sound effects cards need a responsive grid");
+assert.match(html,/id="effectsLoop"/,"the page must provide a loop control for long recordings");
+assert.match(css,/\\.effects-grid/,"nature sound cards need a responsive grid");
 assert.match(css,/\.effect-card:focus-visible/,"sound effect controls must be keyboard accessible");
