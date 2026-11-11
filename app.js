@@ -62,7 +62,9 @@
     $("guidance").textContent="تم تحديث تردد الوتر. سيُستخدم هذا المرجع في القياس والنغمة المسموعة.";
   }
   function frequencyToNote(freq){
-    const midi=Math.round(69+12*Math.log2(freq/A4)),name=noteNames[(midi%12+12)%12],octave=Math.floor(midi/12)-1;
+    const exactMidi=69+12*Math.log2(freq/A4);
+    const midi=Math.round(exactMidi*2)/2;
+    const name=noteName(midi),octave=Math.floor(midi/12)-1;
     return {midi,name,octave,frequency:A4*Math.pow(2,(midi-69)/12)};
   }
   function updateMeter(cents){
@@ -74,32 +76,75 @@
     $("noteName").textContent="—";$("noteOctave").textContent="";$("frequency").textContent="—";$("centsValue").textContent="— سنت";$("meterNeedle").style.left="50%";$("pitchState").textContent="بانتظار الصوت";
   }
   function autoCorrelate(buf,sampleRate){
-    let rms=0;for(let i=0;i<buf.length;i++)rms+=buf[i]*buf[i];rms=Math.sqrt(rms/buf.length);
-    if(rms<0.012)return -1;
-    let r1=0,r2=buf.length-1,threshold=0.2;
-    for(let i=0;i<buf.length/2;i++){if(Math.abs(buf[i])<threshold){r1=i;break;}}
-    for(let i=1;i<buf.length/2;i++){if(Math.abs(buf[buf.length-i])<threshold){r2=buf.length-i;break;}}
-    const data=buf.slice(r1,r2),size=data.length;
-    if(size<3)return -1;
-    const corr=new Float32Array(size);
-    for(let lag=0;lag<size;lag++){let sum=0;for(let j=0;j<size-lag;j++)sum+=data[j]*data[j+lag];corr[lag]=sum;}
-    let d=0;while(d+1<size&&corr[d]>corr[d+1])d++;
-    let max=-1,maxpos=-1;
-    for(let i=d;i<size;i++){if(corr[i]>max){max=corr[i];maxpos=i;}}
-    if(maxpos<=0||maxpos>=size-1)return -1;
-    const x1=corr[maxpos-1],x2=corr[maxpos],x3=corr[maxpos+1],a=(x1+x3-2*x2)/2,b=(x3-x1)/2;
-    const shift=a?-.5*b/a:0,period=maxpos+shift;
-    return period>0?sampleRate/period:-1;
+    // Downsample by two, then run a bounded YIN difference search.
+    // This avoids the previous full O(n^2) autocorrelation on every animation frame.
+    const size=Math.floor(buf.length/2);
+    if(size<8)return -1;
+    const data=new Float32Array(size);
+    let rms=0;
+    for(let i=0;i<size;i++){
+      const value=(buf[i*2]+buf[i*2+1])*.5;
+      data[i]=value;rms+=value*value;
+    }
+    rms=Math.sqrt(rms/size);
+    if(rms<.008)return -1;
+    const rate=sampleRate/2;
+    const minLag=Math.max(2,Math.floor(rate/1200));
+    const maxLag=Math.min(size-2,Math.ceil(rate/35));
+    if(maxLag<=minLag)return -1;
+    const diff=new Float32Array(maxLag+1);
+    const cmnd=new Float32Array(maxLag+1);
+    const count=size-maxLag;
+    for(let lag=1;lag<=maxLag;lag++){
+      let sum=0;
+      for(let j=0;j<count;j++){
+        const delta=data[j]-data[j+lag];
+        sum+=delta*delta;
+      }
+      diff[lag]=sum;
+    }
+    let cumulative=0;
+    for(let lag=1;lag<=maxLag;lag++){
+      cumulative+=diff[lag];
+      cmnd[lag]=cumulative>0?diff[lag]*lag/cumulative:1;
+    }
+    let chosen=-1;
+    for(let lag=minLag;lag<=maxLag;lag++){
+      if(cmnd[lag]<.15){
+        while(lag+1<=maxLag&&cmnd[lag+1]<cmnd[lag])lag++;
+        chosen=lag;break;
+      }
+    }
+    if(chosen<0){
+      let best=.35;
+      for(let lag=minLag;lag<=maxLag;lag++){
+        if(cmnd[lag]<best){best=cmnd[lag];chosen=lag;}
+      }
+      if(chosen<0)return -1;
+    }
+    const left=cmnd[chosen-1]??cmnd[chosen];
+    const center=cmnd[chosen];
+    const right=cmnd[chosen+1]??center;
+    const denominator=left-2*center+right;
+    const shift=denominator?Math.max(-.5,Math.min(.5,.5*(left-right)/denominator)):0;
+    const period=chosen+shift;
+    return period>0?rate/period:-1;
   }
   function tick(){
     if(!state.analyser)return;
     state.analyser.getFloatTimeDomainData(state.buffer);
     const hz=autoCorrelate(state.buffer,state.context.sampleRate);
     if(hz>35&&hz<1200){
-      const n=frequencyToNote(hz),cents=1200*Math.log2(hz/n.frequency);
+      const n=frequencyToNote(hz);
+      const targetFrequency=currentStrings()[state.stringIndex][2];
+      const targetNote=frequencyToNote(targetFrequency);
+      const cents=1200*Math.log2(hz/targetFrequency);
       $("noteName").textContent=n.name;$("noteOctave").textContent=n.octave;
-      $("frequency").textContent=hz.toFixed(2);$("pitchState").textContent=Math.abs(cents)<=5?"مضبوط تقريباً":cents<0?"أخفض من النغمة":"أعلى من النغمة";
-      $("guidance").textContent=Math.abs(cents)<=5?"ممتاز! النغمة قريبة جداً من الهدف.":cents<0?"ارفع شدّ الوتر قليلاً لزيادة التردد.":"أرخِ الوتر قليلاً لخفض التردد.";
+      $("frequency").textContent=hz.toFixed(2);
+      $("pitchState").textContent=Math.abs(cents)<=5?"مضبوط تقريباً":cents<0?"أخفض من الهدف":"أعلى من الهدف";
+      if(Math.abs(cents)<=5)$("guidance").textContent="ممتاز! الوتر قريب جداً من التردد المرجعي المحدد.";
+      else if(Math.abs(cents)>100)$("guidance").textContent="النغمة بعيدة عن الوتر المحدد ("+targetNote.name+targetNote.octave+"). تأكد من اختيار الوتر الصحيح.";
+      else $("guidance").textContent=cents<0?"ارفع شدّ الوتر قليلاً لزيادة التردد.":"أرخِ الوتر قليلاً لخفض التردد.";
       updateMeter(cents);
     }
     state.raf=requestAnimationFrame(tick);
@@ -289,11 +334,11 @@
   const drumNames={dum:"دُم",tak:"تَك",daf:"دَف",riq:"رَق",clap:"تصفيق",cymbal:"صَنج",snare:"سنير",bass:"باس",slap:"صفعة",sagat:"صاجات",shaker:"شيكر",tom:"توم"};
   const drumKeys={dum:"1",tak:"2",daf:"3",riq:"4",clap:"5",cymbal:"6",snare:"7",bass:"8",slap:"9",sagat:"0",shaker:"Q",tom:"W"};
   const rhythmPatterns={
-    maqsum:{name:"مقسوم",description:"إيقاع شرقي رباعي شائع",steps:{0:["dum"],3:["tak"],4:["tak"],6:["dum"],8:["dum"],11:["tak"],12:["tak"],14:["dum"]}},
-    baladi:{name:"بلدي",description:"إيقاع بلدي بأربع نبضات",steps:{0:["dum"],2:["tak"],4:["dum"],6:["tak"],8:["dum"],10:["tak"],12:["dum"],14:["tak"]}},
-    malfuf:{name:"ملفوف",description:"إيقاع سريع بحركة ثنائية",steps:{0:["dum"],2:["tak"],4:["tak"],6:["dum"],8:["tak"],10:["tak"],12:["dum"],14:["tak"]}},
-    saidi:{name:"صعيدي",description:"إيقاع صعيدي قوي",steps:{0:["dum"],2:["tak"],4:["dum"],6:["tak"],8:["dum"],10:["dum"],12:["tak"],14:["tak"]}},
-    wahda:{name:"وحدة كبيرة",description:"إيقاع هادئ بأربع نبضات",steps:{0:["dum"],4:["tak"],8:["dum"],12:["tak"]}}
+    maqsum:{name:"مقسوم",beats:4,description:"إيقاع شرقي رباعي شائع",steps:{0:["dum"],3:["tak"],4:["tak"],6:["dum"],8:["dum"],11:["tak"],12:["tak"],14:["dum"]}},
+    baladi:{name:"بلدي",beats:4,description:"إيقاع بلدي بأربع نبضات",steps:{0:["dum"],2:["tak"],4:["dum"],6:["tak"],8:["dum"],10:["tak"],12:["dum"],14:["tak"]}},
+    malfuf:{name:"ملفوف",beats:2,description:"إيقاع سريع بحركة ثنائية",steps:{0:["dum"],2:["tak"],4:["tak"],6:["dum"]}},
+    saidi:{name:"صعيدي",beats:4,description:"إيقاع صعيدي قوي",steps:{0:["dum"],2:["tak"],4:["dum"],6:["tak"],8:["dum"],10:["dum"],12:["tak"],14:["tak"]}},
+    wahda:{name:"وحدة كبيرة",beats:4,description:"إيقاع هادئ بأربع نبضات",steps:{0:["dum"],4:["tak"],8:["dum"],12:["tak"]}}
   };
   let drumAudioContext=null;
   const rhythmState={timer:null,nextStep:0,nextTime:0,bpm:100,playing:false,pattern:"maqsum"};
@@ -380,14 +425,20 @@
     if(label)label.textContent=rhythmState.playing?"الإيقاع يعمل الآن":"الإيقاع متوقف";
   }
   function scheduleRhythmStep(ctx){
-    const pattern=rhythmPatterns[rhythmState.pattern],hits=pattern.steps[rhythmState.nextStep]||[];
-    hits.forEach(type=>{playDrumSound(ctx,type,rhythmState.nextTime);flashDrumPad(type);});
+    const pattern=rhythmPatterns[rhythmState.pattern];
+    const step=rhythmState.nextStep;
+    const hits=pattern.steps[step]||[];
+    hits.forEach(type=>{
+      playDrumSound(ctx,type,rhythmState.nextTime);
+      const delay=Math.max(0,(rhythmState.nextTime-ctx.currentTime)*1000);
+      window.setTimeout(()=>flashDrumPad(type),delay);
+    });
+    const beat=Math.floor(step/4)+1;
+    const beatEl=$("rhythmBeat");
+    if(beatEl)beatEl.textContent="النبضة "+beat+" / "+pattern.beats;
     const stepDuration=60/rhythmState.bpm/4;
     rhythmState.nextTime+=stepDuration;
-    rhythmState.nextStep=(rhythmState.nextStep+1)%16;
-    const beat=Math.floor((rhythmState.nextStep+3)%16/4)+1;
-    const beatEl=$("rhythmBeat");
-    if(beatEl)beatEl.textContent="النبضة "+(beat===0?4:beat)+" / 4";
+    rhythmState.nextStep=(step+1)%(pattern.beats*4);
   }
   async function startRhythm(){
     try{
