@@ -568,7 +568,7 @@
     glassTap:{name:"طرق على كأس زجاجي",url:"https://commons.wikimedia.org/wiki/Special:FilePath/Binging_glass.ogg",source:"https://commons.wikimedia.org/wiki/File:Binging_glass.ogg",loopable:false},
     crow:{name:"نداء الغراب",url:"https://commons.wikimedia.org/wiki/Special:FilePath/American_Crow.ogg",source:"https://commons.wikimedia.org/wiki/File:American_Crow.ogg",loopable:false},
     leaves:{name:"المشي على أوراق الشجر",url:"https://commons.wikimedia.org/wiki/Special:FilePath/Forest_track_3.ogg",source:"https://commons.wikimedia.org/wiki/File:Forest_track_3.ogg",loopable:false},
-    sea:{name:"أمواج الماء",url:"https://commons.wikimedia.org/wiki/Special:FilePath/Waves.ogg",source:"https://commons.wikimedia.org/wiki/File:Waves.ogg",loopable:true},
+    sea:{name:"أمواج الماء",url:"https://commons.wikimedia.org/wiki/Special:FilePath/On_a_pebble_beach.ogg",source:"https://commons.wikimedia.org/wiki/File:On_a_pebble_beach.ogg",loopable:true},
     thunder:{name:"المطر والرعد",url:"https://commons.wikimedia.org/wiki/Special:FilePath/Rain_and_thunder.ogg",source:"https://commons.wikimedia.org/wiki/File:Rain_and_thunder.ogg",loopable:true},
     gunshot:{name:"طلقات صوتية محاكاة",url:"https://commons.wikimedia.org/wiki/Special:FilePath/Gunshots_8.ogg",source:"https://commons.wikimedia.org/wiki/File:Gunshots_8.ogg",loopable:false},
     wind:{name:"عواء الرياح",url:"https://commons.wikimedia.org/wiki/Special:FilePath/Howling_wind.ogg",source:"https://commons.wikimedia.org/wiki/File:Howling_wind.ogg",loopable:true},
