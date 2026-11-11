@@ -565,14 +565,14 @@
     window.setTimeout(()=>{try{voice.disconnect();}catch{}},Math.max(700,tail*1500));
   }
   const effectLibrary={
-    glassTap:{name:"طرق على كأس زجاجي",url:"https://commons.wikimedia.org/wiki/Special:FilePath/Binging_glass.ogg",source:"https://commons.wikimedia.org/wiki/File:Binging_glass.ogg",loopable:false},
-    crow:{name:"نداء الغراب",url:"https://commons.wikimedia.org/wiki/Special:FilePath/American_Crow.ogg",source:"https://commons.wikimedia.org/wiki/File:American_Crow.ogg",loopable:false},
-    leaves:{name:"المشي على أوراق الشجر",url:"https://commons.wikimedia.org/wiki/Special:FilePath/Forest_track_3.ogg",source:"https://commons.wikimedia.org/wiki/File:Forest_track_3.ogg",loopable:false},
-    sea:{name:"أمواج الماء",url:"https://commons.wikimedia.org/wiki/Special:FilePath/On_a_pebble_beach.ogg",source:"https://commons.wikimedia.org/wiki/File:On_a_pebble_beach.ogg",loopable:true},
-    thunder:{name:"المطر والرعد",url:"https://commons.wikimedia.org/wiki/Special:FilePath/Rain_and_thunder.ogg",source:"https://commons.wikimedia.org/wiki/File:Rain_and_thunder.ogg",loopable:true},
-    gunshot:{name:"طلقات صوتية محاكاة",url:"https://commons.wikimedia.org/wiki/Special:FilePath/Gunshots_8.ogg",source:"https://commons.wikimedia.org/wiki/File:Gunshots_8.ogg",loopable:false},
-    wind:{name:"عواء الرياح",url:"https://commons.wikimedia.org/wiki/Special:FilePath/Howling_wind.ogg",source:"https://commons.wikimedia.org/wiki/File:Howling_wind.ogg",loopable:true},
-    rain:{name:"صوت المطر",url:"https://commons.wikimedia.org/wiki/Special:FilePath/Rain_(1).ogg",source:"https://commons.wikimedia.org/wiki/File:Rain_(1).ogg",loopable:true}
+    crow:{name:"نداء الغراب",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/American_Crow.ogg",source:"https://commons.wikimedia.org/wiki/File:American_Crow.ogg",loopable:false},
+    forestBirds:{name:"طيور الغابة",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Birds_forest.ogg",source:"https://commons.wikimedia.org/wiki/File:Birds_forest.ogg",loopable:true},
+    rainforest:{name:"أصوات الغابة المطيرة",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Walk_in_the_rainforest.ogg",source:"https://commons.wikimedia.org/wiki/File:Walk_in_the_rainforest.ogg",loopable:true},
+    sea:{name:"أمواج الشاطئ",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/On_a_pebble_beach.ogg",source:"https://commons.wikimedia.org/wiki/File:On_a_pebble_beach.ogg",loopable:true},
+    stream:{name:"جدول ماء جارٍ",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Swale.ogg",source:"https://commons.wikimedia.org/wiki/File:Swale.ogg",loopable:true},
+    thunder:{name:"المطر والرعد",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Rain_and_thunder.ogg",source:"https://commons.wikimedia.org/wiki/File:Rain_and_thunder.ogg",loopable:true},
+    wind:{name:"عواء الرياح",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Howling_wind.ogg",source:"https://commons.wikimedia.org/wiki/File:Howling_wind.ogg",loopable:true},
+    rain:{name:"صوت المطر",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Rain_(1).ogg",source:"https://commons.wikimedia.org/wiki/File:Rain_(1).ogg",loopable:true}
   };
   let currentEffectAudio=null,currentEffectType=null,effectPlaybackToken=0;
   function clearEffectCard(){
