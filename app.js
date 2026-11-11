@@ -717,3 +717,4 @@
   initDrumPads();
   initNavigation();
 })();
+// Real instrument recordings are bundled locally under assets/audio with source credits.
