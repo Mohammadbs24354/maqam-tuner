@@ -484,6 +484,7 @@
     bossaNova:{name:"بوسا نوفا",beats:4,description:"بوسا نوفا هادئة مع نمط باس متداخل وريم/سنير خفيف وشيكر مستمر.",steps:{0:["bass","shaker"],3:["shaker"],4:["snare","shaker"],6:["bass","shaker"],8:["bass","shaker"],10:["shaker"],12:["snare","shaker"],14:["bass","shaker"]}}
   };
   let drumAudioContext=null,drumMaster=null,drumCompressor=null;
+  let effectsBus=null,effectsBusContext=null,effectsVolumeValue=.72;
   const rhythmState={timer:null,nextStep:0,nextTime:0,bpm:100,playing:false,pattern:"maqsum"};
   function getDrumContext(){
     const AudioCtx=window.AudioContext||window.webkitAudioContext;
@@ -562,6 +563,127 @@
     const tail=type==="cymbal"?1.1:type==="ride" ? .48 : type==="openHat" ? .38 : .38;
     voice.gain.setTargetAtTime(.0001,at+tail,.035);
     window.setTimeout(()=>{try{voice.disconnect();}catch{}},Math.max(700,tail*1500));
+  }
+  function getEffectsBus(ctx){
+    if(effectsBusContext!==ctx||!effectsBus){
+      effectsBus=ctx.createGain();
+      effectsBus.gain.value=effectsVolumeValue;
+      effectsBus.connect(drumMaster);
+      effectsBusContext=ctx;
+    }
+    return effectsBus;
+  }
+  function effectNoise(ctx,output,{duration=.3,filter="bandpass",frequency=1200,endFrequency=frequency,level=.3,attack=.015,at=ctx.currentTime,q=.8}={}){
+    const length=Math.max(1,Math.floor(ctx.sampleRate*duration));
+    const buffer=ctx.createBuffer(1,length,ctx.sampleRate),data=buffer.getChannelData(0);
+    let brown=0;
+    for(let i=0;i<length;i++){
+      const white=Math.random()*2-1;
+      brown=(brown+.025*white)/1.025;
+      data[i]=filter==="lowpass"?brown*3.5:white;
+    }
+    const source=ctx.createBufferSource(),filterNode=ctx.createBiquadFilter(),amp=ctx.createGain();
+    source.buffer=buffer;filterNode.type=filter;
+    filterNode.frequency.setValueAtTime(Math.max(30,frequency),at);
+    if(endFrequency!==frequency)filterNode.frequency.exponentialRampToValueAtTime(Math.max(30,endFrequency),at+duration);
+    filterNode.Q.value=q;
+    amp.gain.setValueAtTime(.0001,at);
+    amp.gain.linearRampToValueAtTime(Math.max(.0001,level),at+Math.min(attack,duration*.45));
+    amp.gain.exponentialRampToValueAtTime(.0001,at+duration);
+    source.connect(filterNode);filterNode.connect(amp);amp.connect(output);
+    source.start(at);source.stop(at+duration+.01);
+  }
+  function effectTone(ctx,output,{frequency=440,endFrequency=frequency,duration=.2,level=.15,wave="sine",at=ctx.currentTime,detune=0}={}){
+    const oscillator=ctx.createOscillator(),amp=ctx.createGain();
+    oscillator.type=wave;oscillator.frequency.setValueAtTime(Math.max(1,frequency),at);
+    if(endFrequency!==frequency)oscillator.frequency.exponentialRampToValueAtTime(Math.max(1,endFrequency),at+duration);
+    oscillator.detune.setValueAtTime(detune,at);
+    amp.gain.setValueAtTime(.0001,at);amp.gain.linearRampToValueAtTime(level,at+.006);
+    amp.gain.exponentialRampToValueAtTime(.0001,at+duration);
+    oscillator.connect(amp);amp.connect(output);oscillator.start(at);oscillator.stop(at+duration+.02);
+  }
+  async function playSoundEffect(type){
+    const names={glassTap:"طرق الزجاج",crow:"صوت الغراب",leaves:"حفيف أوراق الشجر",sea:"أمواج البحر",glassBreak:"كسر الزجاج",thunder:"البرق والرعد",gunshot:"إطلاق نار",wind:"صوت الرياح",rain:"صوت المطر"};
+    if(!names[type])return;
+    try{
+      const ctx=getDrumContext();
+      if(ctx.state!=="running")await ctx.resume();
+      if(ctx.state!=="running")throw new Error("لم يتم تفعيل الصوت؛ اضغط مرة أخرى");
+      const bus=getEffectsBus(ctx),voice=ctx.createGain(),now=ctx.currentTime;
+      voice.gain.value=.82;voice.connect(bus);
+      let duration=1.1;
+      if(type==="glassTap"){
+        duration=.42;
+        [[1480,.25,.21],[2180,.19,.29],[2970,.12,.17],[3620,.07,.12]].forEach(([f,l,d],i)=>effectTone(ctx,voice,{frequency:f,endFrequency:f*.985,duration:d,level:l,at:now+i*.008,detune:i%2?5:-4}));
+      }else if(type==="crow"){
+        duration=1.65;
+        [[0,720,390,.43],[.48,650,340,.48],[1.02,780,420,.46]].forEach(([delay,start,end,len],i)=>{
+          const at=now+delay;
+          effectTone(ctx,voice,{frequency:start,endFrequency:end,duration:len,level:.27,wave:"sawtooth",at});
+          effectTone(ctx,voice,{frequency:start*1.48,endFrequency:end*1.55,duration:len*.72,level:.055,wave:"triangle",at:at+.015,detune:i%2?8:-7});
+        });
+      }else if(type==="leaves"){
+        duration=2.05;
+        [0,.28,.69,1.08,1.53].forEach((delay,i)=>effectNoise(ctx,voice,{duration:.42+(i%2)*.12,filter:"bandpass",frequency:1700+i*180,endFrequency:2600+i*150,level:.13,attack:.09,at:now+delay,q:.55}));
+      }else if(type==="sea"){
+        duration=3.35;
+        effectNoise(ctx,voice,{duration:3.15,filter:"lowpass",frequency:180,endFrequency:1050,level:.56,attack:1.1,at:now,q:.45});
+        effectNoise(ctx,voice,{duration:2.5,filter:"bandpass",frequency:650,endFrequency:1250,level:.13,attack:.8,at:now+.35,q:.4});
+        effectNoise(ctx,voice,{duration:2.1,filter:"lowpass",frequency:110,endFrequency:180,level:.2,attack:.65,at:now+1.05,q:.5});
+      }else if(type==="glassBreak"){
+        duration=1.25;
+        effectNoise(ctx,voice,{duration:.68,filter:"highpass",frequency:1150,endFrequency:5200,level:.46,attack:.003,at:now,q:.65});
+        effectNoise(ctx,voice,{duration:.32,filter:"bandpass",frequency:2600,endFrequency:4800,level:.24,attack:.002,at:now+.025,q:.8});
+        for(let i=0;i<22;i++){
+          const at=now+.025+Math.random()*.48,frequency=1250+Math.random()*4400,len=.07+Math.random()*.24;
+          effectTone(ctx,voice,{frequency,endFrequency:frequency*(.94+Math.random()*.08),duration:len,level:.035+Math.random()*.045,wave:i%3===0?"triangle":"sine",at,detune:Math.random()*18-9});
+        }
+      }else if(type==="thunder"){
+        duration=3.8;
+        effectNoise(ctx,voice,{duration:3.65,filter:"lowpass",frequency:75,endFrequency:180,level:.88,attack:.18,at:now,q:.35});
+        effectNoise(ctx,voice,{duration:2.7,filter:"lowpass",frequency:115,endFrequency:55,level:.48,attack:.42,at:now+.35,q:.5});
+        effectTone(ctx,voice,{frequency:48,endFrequency:29,duration:3.25,level:.18,wave:"sine",at:now+.15});
+        effectNoise(ctx,voice,{duration:.11,filter:"highpass",frequency:2200,endFrequency:800,level:.12,attack:.002,at:now,q:.5});
+      }else if(type==="gunshot"){
+        duration=.82;
+        effectNoise(ctx,voice,{duration:.14,filter:"highpass",frequency:900,endFrequency:4200,level:.85,attack:.001,at:now,q:.5});
+        effectNoise(ctx,voice,{duration:.31,filter:"lowpass",frequency:170,endFrequency:45,level:.72,attack:.002,at:now,q:.5});
+        effectTone(ctx,voice,{frequency:118,endFrequency:42,duration:.34,level:.32,wave:"sawtooth",at:now});
+        effectNoise(ctx,voice,{duration:.12,filter:"bandpass",frequency:720,endFrequency:350,level:.2,attack:.003,at:now+.18,q:.6});
+        effectNoise(ctx,voice,{duration:.1,filter:"bandpass",frequency:480,endFrequency:260,level:.12,attack:.003,at:now+.34,q:.6});
+      }else if(type==="wind"){
+        duration=3.15;
+        effectNoise(ctx,voice,{duration:3,filter:"bandpass",frequency:240,endFrequency:760,level:.42,attack:1.05,at:now,q:.25});
+        effectNoise(ctx,voice,{duration:2.4,filter:"lowpass",frequency:120,endFrequency:260,level:.24,attack:.9,at:now+.3,q:.35});
+      }else if(type==="rain"){
+        duration=2.7;
+        effectNoise(ctx,voice,{duration:2.55,filter:"highpass",frequency:1050,endFrequency:2400,level:.34,attack:.35,at:now,q:.45});
+        for(let i=0;i<34;i++){
+          const at=now+Math.random()*2.25,frequency=850+Math.random()*2600,len=.025+Math.random()*.07;
+          effectTone(ctx,voice,{frequency,endFrequency:frequency*.8,duration:len,level:.018+Math.random()*.025,wave:"sine",at});
+        }
+      }
+      voice.gain.setTargetAtTime(.0001,now+duration-.12,.045);
+      window.setTimeout(()=>{try{voice.disconnect();}catch(error){}},Math.ceil((duration+.5)*1000));
+      const status=$("effectsStatus");if(status)status.textContent="يُشغّل الآن: "+names[type];
+      document.querySelectorAll(".effect-card").forEach(card=>card.classList.toggle("is-playing",card.dataset.effect===type));
+      window.setTimeout(()=>document.querySelectorAll(".effect-card[data-effect=\""+type+"\"]").forEach(card=>card.classList.remove("is-playing")),Math.ceil(duration*1000));
+    }catch(error){
+      const status=$("effectsStatus");if(status)status.textContent="تعذر تشغيل الصوت: "+(error.message||"تحقق من إعدادات الصوت والمتصفح");
+    }
+  }
+  function initSoundEffects(){
+    const grid=$("effectsGrid");if(!grid)return;
+    grid.addEventListener("click",event=>{
+      const card=event.target.closest(".effect-card[data-effect]");
+      if(card)playSoundEffect(card.dataset.effect);
+    });
+    const volume=$("effectsVolume"),output=$("effectsVolumeValue");
+    if(volume)volume.addEventListener("input",event=>{
+      effectsVolumeValue=Number(event.target.value)/100;
+      if(effectsBus&&drumAudioContext&&drumAudioContext.state!=="closed")effectsBus.gain.setTargetAtTime(effectsVolumeValue,drumAudioContext.currentTime,.025);
+      if(output)output.textContent=event.target.value+"%";
+    });
   }
   function setDrumStatus(message){const status=$("drumNowPlaying");if(status)status.textContent=message;}
   function flashDrumPad(type){
@@ -745,6 +867,7 @@
   renderTuning();
   initMaqam();
   initDrumPads();
+  initSoundEffects();
   initNavigation();
 })();
 // Real instrument recordings are bundled locally under assets/audio with source credits.
