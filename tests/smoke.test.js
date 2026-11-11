@@ -136,3 +136,13 @@ const bundledSamples=[
 assert.equal(bundledSamples.length,63,"the bundled sample inventory should be complete");
 for (const file of bundledSamples) assert.ok(fs.existsSync(path.join(root,"assets/audio",file)),"missing bundled instrument sample: "+file);
 assert.match(css, /\.maqam-voice-source/, "sample provenance status should be styled");
+
+assert.match(html, /id="octaveUp"/, "maqam octave raise arrow must be available");
+assert.match(html, /id="octaveDown"/, "maqam octave lower arrow must be available");
+assert.match(app, /let maqamOctaveShift=0/, "maqam octave shift should start at the selected root octave");
+assert.match(app, /baseRoot\+\(maqamOctaveShift\*12\)/, "octave control must transpose by twelve semitones");
+assert.match(app, /octaveUp.*addEventListener\("click"/, "right arrow should raise the octave");
+assert.match(app, /octaveDown.*addEventListener\("click"/, "left arrow should lower the octave");
+assert.match(app, /MAX_MAQAM_OCTAVE=2/, "octave raising should have a safe upper bound");
+assert.match(app, /MIN_MAQAM_OCTAVE=-2/, "octave lowering should have a safe lower bound");
+assert.match(css, /\.maqam-octave-controls/, "octave controls should have dedicated responsive styling");
