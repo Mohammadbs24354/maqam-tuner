@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101827">
+  <meta name="theme-color" content="#09111e">\n  <meta name="color-scheme" content="dark">
   <meta name="description" content="مقام — موالف موسيقي للمقامات والآلات الشرقية ولوحة إيقاعات تفاعلية.">
   <title>مقام | موالف ومقامات ودرامز</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,14 +23,14 @@
     <span class="top-note"><span class="live-dot"></span> استمع، اضبط، واعزف</span>
   </header>
 
-  <main class="page">
-    <section class="intro">
+  <main class="page" id="mainContent">
+    <section class="intro" aria-labelledby="siteTitle">
       <p class="eyebrow">دقّة تلتقي بالموسيقى</p>
-      <h1>خلّي نغمتك <span>في المقام.</span></h1>
+      <h1 id="siteTitle">خلّي نغمتك <span>في المقام.</span></h1>
       <p class="lead">موالف موسيقي يساعدك على ضبط أوتارك بدقة، من أول نغمة حتى آخر وتر.</p>
     </section>
 
-    <div id="tunerPage" class="site-page">
+    <div id="tunerPage" class="site-page" aria-label="صفحة موالف الآلات">
     <section class="workspace" aria-label="موالف الأوتار">
       <div class="panel tuner-panel">
         <div class="panel-head">
@@ -91,7 +91,7 @@
 
 
     </div>
-    <div id="maqamPage" class="site-page" hidden>
+    <div id="maqamPage" class="site-page" aria-label="صفحة المقامات" hidden>
     <section class="maqam-section" id="maqamSection" aria-labelledby="maqamTitle">
       <div class="maqam-heading">
         <span class="section-kicker">03 / عالم المقامات</span>
@@ -131,7 +131,7 @@
 
 
     </div>
-    <div id="drumsPage" class="site-page" hidden>
+    <div id="drumsPage" class="site-page" aria-label="صفحة استوديو الإيقاعات" hidden>
       <section class="drums-section" aria-labelledby="drumsTitle">
         <div class="drums-heading">
           <span class="section-kicker">04 / الإيقاع</span>
