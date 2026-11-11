@@ -35,7 +35,8 @@ assert.equal(ids.length, new Set(ids).size, "HTML IDs must be unique");
 const missingIds = [...new Set([...app.matchAll(/\$\("([^"]+)"\)/g)].map(match => match[1]).filter(id => !ids.includes(id)))];
 assert.deepEqual(missingIds, [], "all direct JavaScript element references must exist in HTML");
 
-const pageIds = new Set([...html.matchAll(/class="site-page"[^>]*\bid="([^"]+)"/g)].map(match => match[1]));
+const pageTags = [...html.matchAll(/<[^>]*\bclass="site-page"[^>]*>/g)].map(match => match[0]);
+const pageIds = new Set(pageTags.map(tag => (tag.match(/\bid="([^"]+)"/) || [])[1]).filter(Boolean));
 const navTargets = [...html.matchAll(/data-page="([^"]+)"/g)].map(match => match[1]);
 for (const target of navTargets) assert.ok(pageIds.has(target), "navigation target must exist: " + target);
 for (const instrument of ["oud", "guitar", "buzuq", "violin", "easternViolin"]) {
