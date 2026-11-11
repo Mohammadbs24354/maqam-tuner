@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101827">
-  <meta name="description" content="مقام — موالف رقمي للعود والجيتار والبزق والكمان الغربي والشرقي.">
-  <title>مقام | موالف الآلات الموسيقية</title>
+  <meta name="description" content="مقام — موالف موسيقي للمقامات والآلات الشرقية ولوحة إيقاعات تفاعلية.">
+  <title>مقام | موالف ومقامات ودرامز</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -18,6 +18,7 @@
     <nav class="main-nav" aria-label="القائمة الرئيسية">
       <button type="button" class="nav-link active" data-page="tunerPage" aria-current="page">موالف الآلات</button>
       <button type="button" class="nav-link" data-page="maqamPage">المقامات</button>
+      <button type="button" class="nav-link" data-page="drumsPage">الدرامز</button>
     </nav>
     <span class="top-note"><span class="live-dot"></span> استمع، اضبط، واعزف</span>
   </header>
@@ -129,6 +130,31 @@
     </section>
 
 
+    </div>
+    <div id="drumsPage" class="site-page" hidden>
+      <section class="drums-section" aria-labelledby="drumsTitle">
+        <div class="drums-heading">
+          <span class="section-kicker">04 / الإيقاع</span>
+          <h2 id="drumsTitle">لوحة الدرامز</h2>
+          <p>اضغط على أي خانة لتشغيل صوتها الإيقاعي. يمكنك العزف بإصبعك أو باستخدام لوحة المفاتيح.</p>
+        </div>
+        <div class="drum-machine">
+          <div class="drum-machine-top">
+            <div><span class="drum-live-dot"></span><b>لوحة العزف المباشر</b></div>
+            <span class="drum-hint">6 أصوات إيقاعية</span>
+          </div>
+          <div id="drumPads" class="drum-pads" aria-label="خانات الدرامز الست">
+            <button type="button" class="drum-pad drum-dum" data-drum="dum" aria-label="تشغيل دم، الاختصار 1"><span class="drum-pad-symbol">◉</span><strong>دُم</strong><small>KICK · 1</small></button>
+            <button type="button" class="drum-pad drum-tak" data-drum="tak" aria-label="تشغيل تك، الاختصار 2"><span class="drum-pad-symbol">✦</span><strong>تَك</strong><small>TAK · 2</small></button>
+            <button type="button" class="drum-pad drum-daf" data-drum="daf" aria-label="تشغيل دف، الاختصار 3"><span class="drum-pad-symbol">◌</span><strong>دَف</strong><small>DAF · 3</small></button>
+            <button type="button" class="drum-pad drum-riq" data-drum="riq" aria-label="تشغيل رق، الاختصار 4"><span class="drum-pad-symbol">✧</span><strong>رَق</strong><small>RIQ · 4</small></button>
+            <button type="button" class="drum-pad drum-clap" data-drum="clap" aria-label="تشغيل تصفيق، الاختصار 5"><span class="drum-pad-symbol">✋</span><strong>تصفيق</strong><small>CLAP · 5</small></button>
+            <button type="button" class="drum-pad drum-cymbal" data-drum="cymbal" aria-label="تشغيل صنج، الاختصار 6"><span class="drum-pad-symbol">◎</span><strong>صَنج</strong><small>CYMBAL · 6</small></button>
+          </div>
+          <p id="drumNowPlaying" class="drum-now-playing" aria-live="polite">اختر إحدى الخانات لبدء العزف.</p>
+        </div>
+        <p class="drum-note">تعمل الأصوات مباشرة من المتصفح، ولا تحتاج إلى تحميل ملفات صوتية أو منح إذن للميكروفون.</p>
+      </section>
     </div>
     <section class="disclaimer tuner-disclaimer"><b>ملاحظة حول الضبط الشرقي</b><p>العود والبزق والكمان الشرقي لها مدارس وتقاليد متعددة، وقد يختلف عدد الأوتار والتردد المرجعي بحسب المنطقة والعازف. الأنماط المعروضة نقطة بداية شائعة وليست معياراً موحداً؛ استخدم الإعداد المخصص وعدّل الترددات وفق مرجع أستاذك أو فرقتك.</p></section>
   </main>
