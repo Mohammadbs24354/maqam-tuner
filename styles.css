@@ -812,3 +812,14 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .effects-note{max-width:780px;margin:0 auto;color:var(--muted);font-size:11px;line-height:1.9;text-align:center}
 @media(max-width:900px){.effects-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.effects-section{padding:19px 13px}.effects-grid{grid-template-columns:1fr;gap:9px}.effect-card{min-height:88px;padding:12px}.effects-toolbar{grid-template-columns:auto minmax(70px,1fr) 42px;gap:8px;padding:11px}.effects-heading p{font-size:12px}}
+
+/* Licensed real-recording effects controls */
+.effect-license{display:inline-flex;width:max-content;max-width:100%;padding:2px 7px;border-radius:20px;background:#183d34;color:#a9e5c5;font-size:9px!important;font-weight:800;letter-spacing:.02em}
+.effects-actions{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;margin:16px auto 4px}
+.effects-loop{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;cursor:pointer}
+.effects-loop input{accent-color:var(--gold);width:15px;height:15px}
+.effects-stop{border:1px solid #8d5360;border-radius:10px;background:#4a2631;color:#ffe4e8;padding:9px 14px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.effects-stop:hover{background:#633342}
+.effects-stop:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.effects-note a{color:#f0d39e;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:560px){.effects-actions{gap:12px}.effects-stop{padding:9px 12px}}
