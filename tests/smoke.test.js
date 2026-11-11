@@ -67,7 +67,7 @@ assert.match(css, /@media\(max-width:/, "responsive breakpoints must exist");
 const rhythmStart = app.indexOf("  const rhythmPatterns=");
 const rhythmEnd = app.indexOf("  let drumAudioContext", rhythmStart);
 assert.ok(rhythmStart >= 0 && rhythmEnd > rhythmStart, "rhythm patterns must be declared");
-const rhythmSource = app.slice(rhythmStart + "  const rhythmPatterns=".length, rhythmEnd).trim().replace(/;\\s*$/, "");
+const rhythmSource = app.slice(rhythmStart + "  const rhythmPatterns=".length, rhythmEnd).trim().replace(/;\s*$/, "");
 const rhythms = new Function("return (" + rhythmSource + ")")();
 const drumTypes = ["dum","tak","daf","riq","clap","cymbal","snare","bass","slap","sagat","shaker","tom","hihat","openHat","ride"];
 assert.equal(Object.keys(rhythms).length, 14, "all 14 rhythm presets should be available");
