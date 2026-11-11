@@ -597,7 +597,7 @@
     const token=effectPlaybackToken;
     const audio=new Audio();
     audio.preload="none";
-    audio.src=item.url;
+    audio.src=item.url;\n    audio.load();
     audio.volume=effectsVolumeValue;
     const loopControl=$("effectsLoop");
     audio.loop=Boolean(item.loopable&&loopControl&&loopControl.checked);
