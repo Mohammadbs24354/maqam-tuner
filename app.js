@@ -567,6 +567,9 @@
   const effectLibrary={
     crow:{name:"نداء الغراب",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/American_Crow.ogg",source:"https://commons.wikimedia.org/wiki/File:American_Crow.ogg",loopable:false},
     forestBirds:{name:"طيور الغابة",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Birds_forest.ogg",source:"https://commons.wikimedia.org/wiki/File:Birds_forest.ogg",loopable:true},
+    morningBirds:{name:"أصوات الطيور في الصباح",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/R%C3%A9veil_des_oiseaux.ogg",source:"https://commons.wikimedia.org/wiki/File:Réveil_des_oiseaux.ogg",loopable:true},
+    flowingWater:{name:"خرير الماء المتدفق",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Water_flowing_pouring_trickling.ogg",source:"https://commons.wikimedia.org/wiki/File:Water_flowing_pouring_trickling.ogg",loopable:true},
+    rainBirds:{name:"مطر ورعد مع تغريد الطيور",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Rainthunderandbirds.ogg",source:"https://commons.wikimedia.org/wiki/File:Rainthunderandbirds.ogg",loopable:true},
     rainforest:{name:"أصوات الغابة المطيرة",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Walk_in_the_rainforest.ogg",source:"https://commons.wikimedia.org/wiki/File:Walk_in_the_rainforest.ogg",loopable:true},
     sea:{name:"أمواج الشاطئ",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/On_a_pebble_beach.ogg",source:"https://commons.wikimedia.org/wiki/File:On_a_pebble_beach.ogg",loopable:true},
     stream:{name:"جدول ماء جارٍ",url:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Swale.ogg",source:"https://commons.wikimedia.org/wiki/File:Swale.ogg",loopable:true},
