@@ -105,10 +105,34 @@ assert.match(html, /id="siteTitle"/, "main page should have an accessible title"
 assert.match(html, /aria-label="صفحة استوديو الإيقاعات"/, "drum page should have a descriptive label");
 
 assert.match(html, /id="maqamVoice"/, "maqam player must expose an instrument voice selector");
-for (const voice of ["piano","electricGuitar","cleanGuitar","oud","qanun","nay","flute","violin","cello","saxophone"]) {
-  assert.ok(html.includes('value="' + voice + '"'), "missing maqam instrument voice option: " + voice);
-  assert.ok(app.includes(voice + ":{name:"), "missing synthesized voice profile: " + voice);
+const recordedVoices=["piano","electricGuitar","nylonGuitar","steelGuitar","flute","violin","cello","saxophone","qanun"];
+for (const voice of recordedVoices) {
+  assert.ok(html.includes('value="' + voice + '"'), "missing recorded instrument option: " + voice);
+  assert.match(app, new RegExp(voice + ":\\{name:.*?folder:"), "recorded voice must map to local samples: " + voice);
 }
-assert.match(app, /function createMaqamVoice/, "maqam notes must use the selected instrument synthesizer");
-assert.match(app, /filter\.type="lowpass"/, "instrument voices should use tone shaping");
+for (const voice of ["oud","nay"]) {
+  assert.ok(html.includes('value="' + voice + '"'), "missing experimental instrument option: " + voice);
+  assert.match(app, new RegExp(voice + ":\\{name:.*?wave:"), "experimental voice must be clearly synthesized: " + voice);
+}
+assert.match(app, /async function loadMaqamSample/, "recorded samples should load through Web Audio");
+assert.match(app, /ctx\.decodeAudioData/, "recorded samples should decode into audio buffers");
+assert.match(app, /source\.playbackRate\.setValueAtTime\(Math\.pow\(2,\(midi-sample\[1\]\)\/12\)/, "sample playback must transpose accurately, including quarter tones");
+assert.match(app, /async function preloadMaqamSamples/, "scale playback should preload required samples");
+assert.match(html, /id="maqamVoiceSource"/, "instrument sample status must be visible");
 assert.match(app, /maqamVoice.*addEventListener\("change"/, "changing the instrument voice should update playback");
+const bundledSamples=[
+  "piano/C1.ogg","piano/C2.ogg","piano/C3.ogg","piano/C4.ogg","piano/C5.ogg","piano/C6.ogg","piano/C7.ogg","piano/C8.ogg",
+  "nylon/E2.ogg","nylon/A2.ogg","nylon/E3.ogg","nylon/A3.ogg","nylon/E4.ogg","nylon/E5.ogg",
+  "steel/E2.ogg","steel/A2.ogg","steel/E3.ogg","steel/A3.ogg","steel/E4.ogg","steel/E5.ogg",
+  "electricGuitar/E2.ogg","electricGuitar/C3.ogg","electricGuitar/C4.ogg","electricGuitar/C5.ogg","electricGuitar/C6.ogg",
+  "flute/C4.ogg","flute/C5.ogg","flute/C6.ogg","flute/C7.ogg",
+  "violin/G3.ogg","violin/C4.ogg","violin/G4.ogg","violin/C5.ogg","violin/G5.ogg","violin/C6.ogg",
+  "cello/C2.ogg","cello/C3.ogg","cello/C4.ogg","cello/C5.ogg",
+  "saxophone/E3.ogg","saxophone/C4.ogg","saxophone/E4.ogg","saxophone/A4.ogg","saxophone/C5.ogg","saxophone/E5.ogg",
+  "qanun/F3.m4a","qanun/G3.m4a","qanun/A3.m4a","qanun/B3.m4a","qanun/Cs4.m4a","qanun/Ds4.m4a",
+  "qanun/F4.m4a","qanun/G4.m4a","qanun/A4.m4a","qanun/B4.m4a","qanun/Cs5.m4a","qanun/Ds5.m4a",
+  "qanun/F5.m4a","qanun/G5.m4a","qanun/A5.m4a","qanun/B5.m4a","qanun/Cs6.m4a","qanun/Ds6.m4a"
+];
+assert.equal(bundledSamples.length,63,"the bundled sample inventory should be complete");
+for (const file of bundledSamples) assert.ok(fs.existsSync(path.join(root,"assets/audio",file)),"missing bundled instrument sample: "+file);
+assert.match(css, /\.maqam-voice-source/, "sample provenance status should be styled");

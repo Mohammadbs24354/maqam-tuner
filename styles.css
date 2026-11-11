@@ -777,3 +777,5 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .maqam-voice-picker select{flex:1;min-width:0;padding:10px 12px;border:1px solid #455a73;border-radius:9px;background:#172438;color:var(--text);font:inherit;font-size:13px}
 .maqam-voice-picker select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 @media(max-width:420px){.maqam-voice-picker{align-items:stretch;flex-direction:column;gap:6px}.maqam-voice-picker select{width:100%}}
+
+.maqam-voice-source{margin:-5px 0 14px;color:var(--muted);font-size:11px;line-height:1.7}
