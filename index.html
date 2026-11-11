@@ -116,6 +116,7 @@
         </div>
         <div class="piano-panel">
           <div class="piano-topline"><b id="pianoMaqamName">مقام بيات</b><span>اضغط على المربعات لسماع الدرجات</span></div>
+          <div class="maqam-voice-picker"><label for="maqamVoice">صوت الآلة</label><select id="maqamVoice" aria-label="اختر صوت الآلة لعزف المقام"><option value="piano">بيانو</option><option value="electricGuitar">جيتار كهربائي</option><option value="cleanGuitar">جيتار نظيف</option><option value="oud">عود</option><option value="qanun">قانون</option><option value="nay">ناي</option><option value="flute">فلوت</option><option value="violin">كمان</option><option value="cello">تشيللو</option><option value="saxophone">ساكسفون</option></select></div>
           <div id="pianoKeyboard" class="maqam-note-grid" aria-label="درجات المقام التفاعلية"></div>
           <div class="piano-actions"><button type="button" id="playScale" class="primary-button">▶ استمع إلى المقام</button><button type="button" id="stopScale" class="secondary-button" disabled>إيقاف</button></div>
           <p id="pianoNowPlaying" class="piano-now-playing" aria-live="polite">اضغط على أي مربع لسماع درجته.</p>
