@@ -55,7 +55,12 @@ for (const instrument of ["oud", "guitar", "buzuq", "violin", "easternViolin"]) 
   assert.ok(html.includes('data-instrument="' + instrument + '"'), "missing instrument: " + instrument);
 }
 assert.match(app, /malfuf:\{name:"ملفوف",beats:2/, "malfuf should loop as 2/4");
+for (const style of ["jazzSwing","bluesShuffle","house","deepHouse","disco","rock","funk","reggae","bossaNova"]) {
+  assert.ok(app.includes(style + ":{name:"), "missing western rhythm pattern: " + style);
+  assert.ok(html.includes('value="' + style + '"'), "missing western rhythm option: " + style);
+}
+assert.match(app, /pattern\.stepsPerBeat\|\|4/, "scheduler must support triplet subdivisions");
 assert.match(app, /const cents=1200\*Math\.log2\(hz\/targetFrequency\)/, "deviation must be measured against the selected string");
 assert.match(css, /@media\(max-width:/, "responsive breakpoints must exist");
 
-console.log("Smoke tests passed: pitch detection, silence handling, quarter tones, RTL markup, unique IDs, navigation, instruments, selected-string cents, 2/4 rhythm, and responsive CSS.");
+console.log("Smoke tests passed: pitch detection, silence handling, quarter tones, RTL markup, unique IDs, navigation, instruments, selected-string cents, eastern and western rhythm patterns, triplet swing timing, 2/4 rhythm, and responsive CSS.");
