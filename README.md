@@ -4,7 +4,7 @@
 
 - **Live tuner:** microphone-based pitch detection, string reference tones, cents deviation, and editable string frequencies.
 - **Maqam explorer:** interactive scale degrees, quarter-tone notes, instrument voices, and octave transposition.
-- **Rhythm studio:** playable drum pads, ready-made Eastern and Western patterns, tempo control, and keyboard shortcuts.\n- **Sound effects:** nine browser-generated nature and cinematic effects, with an independent volume control.
+- **Rhythm studio:** playable drum pads, ready-made Eastern and Western patterns, tempo control, and keyboard shortcuts.\n- **Sound effects:** eight real nature field recordings hosted on Wikimedia Commons, with volume, loop, and stop controls.
 
 **Live application:** https://mohammadbs24354.github.io/maqam-tuner/  
 **Source code:** https://github.com/Mohammadbs24354/maqam-tuner
@@ -122,7 +122,7 @@ node --check app.js
 node tests/smoke.test.js
 ```
 
-The tests cover JavaScript syntax, pitch detection against generated test tones, silence handling, quarter-tone naming, HTML IDs and navigation targets, instrument and rhythm configuration, bundled audio-file presence, octave controls, licensed sound-effect source mapping and playback controls, and selected accessibility/responsive-style safeguards.
+The tests cover JavaScript syntax, pitch detection against generated test tones, silence handling, quarter-tone naming, HTML IDs and navigation targets, instrument and rhythm configuration, bundled audio-file presence, octave controls, public-domain nature recording source mapping and playback controls, and selected accessibility/responsive-style safeguards.
 
 These are automated source-level and algorithm tests. They do **not** replace real-browser testing of microphone permissions, audio playback, device compatibility, latency, or visual rendering.
 
@@ -154,7 +154,7 @@ These are automated source-level and algorithm tests. They do **not** replace re
 
 - index.html contains the page structure and Arabic UI.
 - styles.css contains the visual system and responsive layouts.
-- app.js contains tuner logic, maqam playback, sample loading, drum synthesis, rhythm scheduling, licensed sound-effect playback, and navigation.
+- app.js contains tuner logic, maqam playback, sample loading, drum synthesis, rhythm scheduling, nature recording playback, and navigation.
 - assets/audio contains the recorded instrument samples and their attribution details.
 - tests/smoke.test.js contains the Node.js smoke tests.
 - .github/workflows/deploy.yml validates the JavaScript, runs the tests, and deploys the site to GitHub Pages on pushes to main.
