@@ -28,7 +28,6 @@
   const $ = id => document.getElementById(id);
   const state = {instrument:"oud",tuningIndex:0,stringIndex:0,stream:null,context:null,analyser:null,buffer:null,raf:0,selectedFrequency:0};
   const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
-  let drumAudioContext=null;
   function currentTuning(){return presets[state.instrument].tunings[state.tuningIndex];}
   function currentStrings(){return currentTuning().strings;}
   function renderTuning(){
