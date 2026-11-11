@@ -823,3 +823,49 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .effects-stop:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .effects-note a{color:#f0d39e;text-decoration:underline;text-underline-offset:3px}
 @media(max-width:560px){.effects-actions{gap:12px}.effects-stop{padding:9px 12px}}
+
+/* Global polish and nature library refresh */
+:where(button,a,input,select):focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+button{-webkit-tap-highlight-color:transparent}
+.topbar{position:sticky;top:0;z-index:30;gap:18px;backdrop-filter:blur(18px);background:rgba(9,17,30,.9);border-bottom:1px solid rgba(116,139,168,.14)}
+.main-nav{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+.nav-link{border:1px solid transparent;border-radius:10px;background:transparent;color:var(--muted);padding:9px 13px;font:inherit;font-size:12px;cursor:pointer;transition:background .18s,border-color .18s,color .18s}
+.nav-link:hover,.nav-link.active{background:#1b2b40;border-color:#354a63;color:var(--text)}
+.nav-link.active{box-shadow:inset 0 -2px 0 var(--gold)}
+.site-page{animation:page-enter .24s ease both}
+@keyframes page-enter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.panel,.maqam-section,.drums-section,.effects-section{box-shadow:0 22px 60px rgba(0,0,0,.22)}
+.effects-section{position:relative;overflow:hidden;margin:0 auto;padding:clamp(22px,4vw,42px);border:1px solid rgba(116,139,168,.25);border-radius:24px;background:radial-gradient(ellipse at 50% -15%,rgba(92,133,153,.18),transparent 55%),linear-gradient(145deg,#142338,#0d1929);box-shadow:0 24px 70px rgba(0,0,0,.28)}
+.effects-heading{max-width:720px;margin:0 auto 27px;text-align:center}
+.effects-heading .section-kicker{display:inline-block;padding:6px 12px;border:1px solid rgba(231,184,106,.24);border-radius:30px;background:rgba(231,184,106,.07)}
+.effects-heading h2{font-size:clamp(25px,3.4vw,36px);letter-spacing:-.5px;margin:12px 0 9px}
+.effects-heading p{color:var(--muted);font-size:13px;line-height:2;margin:0}
+.effects-toolbar{max-width:520px;margin:0 auto 25px;display:grid;grid-template-columns:auto minmax(100px,1fr) 52px;align-items:center;gap:14px;padding:14px 17px;border:1px solid #354960;border-radius:15px;background:rgba(8,19,33,.72)}
+.effects-toolbar label{font-size:12px;color:#dbe4ef;font-weight:700}
+.effects-toolbar input{width:100%;accent-color:var(--gold);cursor:pointer}
+.effects-toolbar output{font-size:13px;color:#f2d49a;font-weight:800;text-align:left;font-variant-numeric:tabular-nums}
+.effects-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.effect-card{min-width:0;min-height:116px;display:flex;align-items:center;gap:14px;padding:17px;border:1px solid rgba(111,137,165,.3);border-radius:17px;background:linear-gradient(145deg,rgba(29,49,71,.94),rgba(15,29,47,.98));color:var(--text);font-family:inherit;text-align:right;cursor:pointer;transition:transform .18s,border-color .18s,background .18s,box-shadow .18s;touch-action:manipulation}
+.effect-card:hover{transform:translateY(-3px);border-color:rgba(231,184,106,.75);background:linear-gradient(145deg,#263e58,#14253a);box-shadow:0 12px 28px rgba(0,0,0,.2)}
+.effect-card:active{transform:translateY(-1px) scale(.995)}
+.effect-card:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.effect-card.is-playing{border-color:#e9bd72;background:linear-gradient(145deg,#3a3428,#17283b);box-shadow:0 0 0 2px #e9bd7230,0 12px 28px #0003}
+.effect-icon{width:54px;height:54px;flex:0 0 54px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:linear-gradient(145deg,#31485b,#1b2d40);font-size:27px}
+.effect-copy{min-width:0;display:flex;flex:1;flex-direction:column;gap:5px}
+.effect-copy strong{font-size:14px;line-height:1.55}
+.effect-copy small{font-size:10px;line-height:1.65;color:var(--muted)}
+.effect-license{display:inline-flex;width:max-content;max-width:100%;padding:3px 8px;border:1px solid rgba(112,214,160,.16);border-radius:20px;background:rgba(36,104,76,.22);color:#a9e5c5;font-size:9px!important;font-weight:800;letter-spacing:.02em}
+.effect-play{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:50%;background:var(--gold);color:#20180e;font-size:11px;box-shadow:0 4px 12px #0003}
+.effect-card.is-playing .effect-play{background:var(--green);color:#092116}
+.effects-actions{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin:19px auto 4px}
+.effects-loop{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;cursor:pointer}
+.effects-loop input{accent-color:var(--gold);width:16px;height:16px}
+.effects-stop{border:1px solid #8d5360;border-radius:11px;background:#4a2631;color:#ffe4e8;padding:10px 16px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;transition:background .18s,transform .18s}
+.effects-stop:hover{background:#633342;transform:translateY(-1px)}
+.effects-stop:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.effects-status{min-height:27px;margin:19px 0 9px;padding:10px 14px;border:1px solid rgba(231,184,106,.18);border-radius:12px;background:rgba(231,184,106,.06);text-align:center;color:#f0d39e;font-size:12px;line-height:1.7}
+.effects-note{max-width:800px;margin:0 auto;color:var(--muted);font-size:11px;line-height:2;text-align:center}
+.effects-note a{color:#f0d39e;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:820px){.topbar{position:relative;flex-wrap:wrap;justify-content:center}.main-nav{order:3;width:100%}.top-note{display:none}}
+@media(max-width:560px){.effects-section{padding:19px 13px;border-radius:17px}.effects-grid{grid-template-columns:1fr;gap:10px}.effect-card{min-height:96px;padding:13px}.effects-toolbar{grid-template-columns:auto minmax(70px,1fr) 42px;gap:8px;padding:11px}.effects-heading p{font-size:12px}.effects-actions{gap:12px}.effects-stop{padding:9px 12px}.nav-link{padding:8px 10px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.site-page{animation:none}.effect-card,.nav-link,.effects-stop{transition:none}.effect-card:hover,.effects-stop:hover{transform:none}}
