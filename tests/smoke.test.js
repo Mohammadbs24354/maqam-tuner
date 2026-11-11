@@ -28,6 +28,19 @@ for (const target of testFrequencies) {
   assert.ok(detected > 0 && errorPercent < 0.2, target + " Hz detection error: " + detected);
 }
 assert.equal(autoCorrelate(new Float32Array(sampleCount), sampleRate), -1, "silence should not produce a pitch");
+const chromaticMatch = app.match(/const chromatic=(\\[[^\\n]+\\]);/);
+assert.ok(chromaticMatch, "quarter-tone note labels must exist");
+const noteNameStart = app.indexOf("  function noteName(midi)");
+const noteNameEnd = app.indexOf("\\n  function pianoPosition", noteNameStart);
+assert.ok(noteNameStart >= 0 && noteNameEnd > noteNameStart, "note name formatter must exist");
+const noteName = new Function("const chromatic=" + chromaticMatch[1] + ";\\n" + app.slice(noteNameStart, noteNameEnd) + "\\nreturn noteName;")();
+assert.equal(noteName(63.5), "مي نصف بيمول", "quarter-tone note should be named correctly");
+const frequencyStart = app.indexOf("  function frequencyToNote(freq)");
+const frequencyEnd = app.indexOf("\\n  function updateMeter", frequencyStart);
+const frequencyToNote = new Function("const A4=440; const noteName=" + noteName.toString() + ";\\n" + app.slice(frequencyStart, frequencyEnd) + "\\nreturn frequencyToNote;")();
+const quarterToneHz = 440 * Math.pow(2, (63.5 - 69) / 12);
+assert.equal(frequencyToNote(quarterToneHz).midi, 63.5, "tuner should retain quarter-tone pitch");
+
 
 assert.match(html, /<html lang="ar" dir="rtl">/, "page must be Arabic RTL");
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
