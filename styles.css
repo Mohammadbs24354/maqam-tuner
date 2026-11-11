@@ -474,3 +474,44 @@ footer{margin-top:18px}
  .drum-pad-symbol{font-size:23px}
 }
 @media(max-width:360px){.drum-pads{gap:7px}.drum-pad{min-height:105px}.drum-pad small{font-size:8px}}
+
+/* Improved clarity and touch targets for the six percussion pads */
+.drum-pads{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+#drumPads .drum-pad{
+  position:relative;isolation:isolate;min-height:174px;padding:20px 12px 16px;
+  border:2px solid rgba(255,255,255,.32);border-radius:18px;
+  color:#fff!important;text-align:center;
+  box-shadow:0 7px 0 rgba(0,0,0,.24),0 12px 22px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.2);
+  outline-offset:4px;
+}
+#drumPads .drum-pad strong{display:block;color:#fff!important;font-size:25px;font-weight:800;line-height:1.35;text-shadow:0 1px 3px #0008}
+#drumPads .drum-pad small{display:block;color:#fff!important;font-size:12px;font-weight:600;letter-spacing:0;text-shadow:0 1px 3px #0008;opacity:.96}
+#drumPads .drum-pad-symbol{font-size:30px;color:#fff!important;text-shadow:0 1px 4px #0008}
+#drumPads .drum-key-number{
+  position:absolute;top:9px;left:10px;width:27px;height:27px;display:grid;place-items:center;
+  border:1px solid #ffffff80;border-radius:8px;background:#07132199;color:#fff;
+  font:700 13px Arial,sans-serif;
+}
+#drumPads .drum-dum{background:linear-gradient(145deg,#98613d,#633b29 75%)}
+#drumPads .drum-tak{background:linear-gradient(145deg,#347fa5,#20516f 75%)}
+#drumPads .drum-daf{background:linear-gradient(145deg,#987b39,#66501f 75%)}
+#drumPads .drum-riq{background:linear-gradient(145deg,#80569e,#50336b 75%)}
+#drumPads .drum-clap{background:linear-gradient(145deg,#a34d62,#6e2d42 75%)}
+#drumPads .drum-cymbal{background:linear-gradient(145deg,#718c45,#435b2d 75%)}
+#drumPads .drum-pad:hover{filter:brightness(1.12);transform:translateY(-2px)}
+#drumPads .drum-pad:active,#drumPads .drum-pad.is-hit{
+  transform:translateY(4px) scale(.985);filter:brightness(1.28);
+  border-color:#fff;box-shadow:inset 0 3px 12px #0005,0 2px 4px #0004;
+}
+#drumPads .drum-pad:focus-visible{outline:3px solid #f4d18e}
+.drum-now-playing{font-size:14px;font-weight:700;color:#f5d99e}
+@media(max-width:760px){
+ .main-nav{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .nav-link{min-width:0;padding-inline:5px;font-size:12px}
+}
+@media(max-width:600px){
+ .drum-pads{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+ #drumPads .drum-pad{min-height:150px;padding:17px 8px 13px}
+ #drumPads .drum-pad strong{font-size:23px}
+ #drumPads .drum-pad small{font-size:11px}
+}
