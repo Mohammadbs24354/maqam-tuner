@@ -214,7 +214,7 @@
       key.className="maqam-note-key"+(isRoot?" root-note-key":"")+(isJawab?" jawab-note-key":(isLast?" ending-note-key":""));
       key.setAttribute("aria-label","الدرجة "+(i+1)+": "+label+"، اضغط لسماع النغمة");
       key.innerHTML='<span class="maqam-degree"></span><strong class="maqam-note-label"></strong><small class="maqam-note-kind"></small>';
-      key.querySelector(".maqam-degree").textContent=isRoot?"القرار":isJawab?"الجواب":isLast?"القفلة":"الدرجة "+(i+1);
+      key.querySelector(".maqam-degree").textContent=data.labels?.[i]|| (isRoot?"القرار":isJawab?"الجواب":isLast?"القفلة":"الدرجة "+(i+1));
       key.querySelector(".maqam-note-label").textContent=label;
       key.querySelector(".maqam-note-kind").textContent=(Math.abs((midi%1)-.5)<.001)?"ربع صوت":"";
       const token="maqam-tile-"+i;
