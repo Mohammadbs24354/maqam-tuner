@@ -64,3 +64,12 @@ assert.match(app, /const cents=1200\*Math\.log2\(hz\/targetFrequency\)/, "deviat
 assert.match(css, /@media\(max-width:/, "responsive breakpoints must exist");
 
 console.log("Smoke tests passed: pitch detection, silence handling, quarter tones, RTL markup, unique IDs, navigation, instruments, selected-string cents, eastern and western rhythm patterns, triplet swing timing, 2/4 rhythm, and responsive CSS.");
+
+
+assert.match(css, /\.topbar\{[\s\S]*?position:sticky/, "navigation should remain accessible while scrolling");
+assert.match(css, /\.workspace\{display:grid/, "tuner workspace should use a clear responsive grid");
+assert.match(css, /\.info-grid\{display:grid/, "instruction cards should be separated into a grid");
+assert.match(css, /prefers-reduced-motion:reduce/, "reduced motion preference should be respected");
+assert.match(css, /@media\(max-width:680px\)/, "mobile layout should be defined");
+assert.match(html, /id="siteTitle"/, "main page should have an accessible title");
+assert.match(html, /aria-label="صفحة استوديو الإيقاعات"/, "drum page should have a descriptive label");
