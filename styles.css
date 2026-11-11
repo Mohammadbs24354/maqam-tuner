@@ -769,3 +769,11 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+
+/* Selectable instrument voices for the maqam player */
+.maqam-voice-picker{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:11px 13px;border:1px solid #34475e;border-radius:11px;background:#111d2d}
+.maqam-voice-picker label{color:var(--muted);font-size:12px;white-space:nowrap}
+.maqam-voice-picker select{flex:1;min-width:0;padding:10px 12px;border:1px solid #455a73;border-radius:9px;background:#172438;color:var(--text);font:inherit;font-size:13px}
+.maqam-voice-picker select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+@media(max-width:420px){.maqam-voice-picker{align-items:stretch;flex-direction:column;gap:6px}.maqam-voice-picker select{width:100%}}
