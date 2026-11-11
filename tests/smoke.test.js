@@ -63,6 +63,36 @@ assert.match(app, /pattern\.stepsPerBeat\|\|4/, "scheduler must support triplet 
 assert.match(app, /const cents=1200\*Math\.log2\(hz\/targetFrequency\)/, "deviation must be measured against the selected string");
 assert.match(css, /@media\(max-width:/, "responsive breakpoints must exist");
 
+
+const rhythmStart = app.indexOf("  const rhythmPatterns=");
+const rhythmEnd = app.indexOf("  let drumAudioContext", rhythmStart);
+assert.ok(rhythmStart >= 0 && rhythmEnd > rhythmStart, "rhythm patterns must be declared");
+const rhythmSource = app.slice(rhythmStart + "  const rhythmPatterns=".length, rhythmEnd).trim().replace(/;\\s*$/, "");
+const rhythms = new Function("return (" + rhythmSource + ")")();
+const drumTypes = ["dum","tak","daf","riq","clap","cymbal","snare","bass","slap","sagat","shaker","tom","hihat","openHat","ride"];
+assert.equal(Object.keys(rhythms).length, 14, "all 14 rhythm presets should be available");
+for (const [name, pattern] of Object.entries(rhythms)) {
+  const subdivisions = pattern.stepsPerBeat || 4;
+  assert.ok(pattern.beats > 0, name + " must define a positive meter");
+  for (const [step, hits] of Object.entries(pattern.steps)) {
+    assert.ok(Number.isInteger(Number(step)) && Number(step) >= 0 && Number(step) < pattern.beats * subdivisions, name + " has an out-of-meter step: " + step);
+    for (const type of hits) {
+      assert.ok(drumTypes.includes(type), name + " uses an unknown sound: " + type);
+      assert.ok(html.includes('data-drum="' + type + '"'), "missing playable pad for sound: " + type);
+    }
+  }
+}
+assert.deepEqual(Object.keys(rhythms.house.steps).filter(step => rhythms.house.steps[step].includes("bass")).sort((a,b)=>a-b), ["0","4","8","12"], "house must use four-on-the-floor kick");
+assert.ok(rhythms.house.steps[4].includes("clap") && rhythms.house.steps[12].includes("clap"), "house clap should land on beats 2 and 4");
+assert.deepEqual(rhythms.reggae.steps[8], ["bass","snare","hihat"], "reggae One Drop should land kick and snare together on beat 3");
+assert.equal(rhythms.jazzSwing.stepsPerBeat, 3, "jazz swing must use triplet subdivision");
+assert.ok(Object.values(rhythms.jazzSwing.steps).some(hits => hits.includes("ride")), "jazz swing should use a ride cymbal");
+assert.match(app, /createDynamicsCompressor/, "drum voices should use a shared dynamics compressor");
+assert.match(app, /function drumMetal/, "metallic instruments should use inharmonic partial synthesis");
+assert.match(html, /data-drum="hihat"/, "closed hi-hat pad must be present");
+assert.match(html, /data-drum="openHat"/, "open hi-hat pad must be present");
+assert.match(html, /data-drum="ride"/, "ride pad must be present");
+
 console.log("Smoke tests passed: pitch detection, silence handling, quarter tones, RTL markup, unique IDs, navigation, instruments, selected-string cents, eastern and western rhythm patterns, triplet swing timing, 2/4 rhythm, and responsive CSS.");
 
 
