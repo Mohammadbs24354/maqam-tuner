@@ -551,3 +551,14 @@ footer{margin-top:18px}
 .rhythm-play-along{margin:18px 0 0;padding:12px 14px;border-inline-start:3px solid #d7ad69;border-radius:8px;background:#ffffff08;color:#c3d0e0;font-size:12px;line-height:1.8}
 @media(max-width:760px){.drum-pads{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}#drumPads .drum-pad{min-height:128px}#drumPads .drum-pad strong{font-size:20px}}
 @media(max-width:480px){.drum-pads{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.rhythm-console-heading{align-items:flex-start;flex-direction:column}.rhythm-actions button{flex:1;padding-inline:10px}.rhythm-beat{width:100%;margin:0;text-align:center}}
+
+
+/* Western rhythm styles: clear category switch and responsive controls */
+.rhythm-category-tabs{display:flex;gap:8px;margin:0 0 14px;padding:5px;border:1px solid #40536b;border-radius:12px;background:#0d1929}
+.rhythm-category-tab{flex:1;min-height:43px;padding:9px 12px;border:1px solid transparent;border-radius:9px;background:transparent;color:#b7c5d8;font:700 13px inherit;font-family:inherit;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease}
+.rhythm-category-tab:hover{background:#ffffff0b;color:#fff}
+.rhythm-category-tab.active{background:linear-gradient(135deg,#f0cf91,#d4a251);color:#241b0d;box-shadow:0 3px 10px #0003}
+.rhythm-category-tab:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.rhythm-select optgroup{background:#132238;color:#e9c17d;font-weight:700}
+.rhythm-select option{background:#0d1929;color:#f5f7fb}
+@media(max-width:420px){.rhythm-category-tabs{gap:5px}.rhythm-category-tab{padding-inline:6px;font-size:11px}}
