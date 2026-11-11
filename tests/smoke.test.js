@@ -146,3 +146,9 @@ assert.match(app, /octaveDown.*addEventListener\("click"/, "left arrow should lo
 assert.match(app, /MAX_MAQAM_OCTAVE=2/, "octave raising should have a safe upper bound");
 assert.match(app, /MIN_MAQAM_OCTAVE=-2/, "octave lowering should have a safe lower bound");
 assert.match(css, /\.maqam-octave-controls/, "octave controls should have dedicated responsive styling");
+
+assert.match(app, /state\.starting\|\|state\.stream/, "microphone startup should reject duplicate requests");
+assert.match(app, /state\.startToken\+\+/, "stopping the tuner should invalidate pending microphone requests");
+assert.match(app, /now-state\.lastAnalysisAt>=40/, "pitch detection should be throttled instead of running on every animation frame");
+assert.match(app, /if\(token!==pianoState\.playbackToken\)\{voice\.stop\(\);return;\}/, "a late-loaded sample must not play after scale playback is stopped");
+assert.match(app, /playPianoNote\(midi,label,\.48,token\)/, "scale sequence cancellation token must reach note playback");
