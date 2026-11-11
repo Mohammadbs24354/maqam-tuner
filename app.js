@@ -28,6 +28,7 @@
   const $ = id => document.getElementById(id);
   const state = {instrument:"oud",tuningIndex:0,stringIndex:0,stream:null,context:null,analyser:null,buffer:null,raf:0,selectedFrequency:0};
   const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
+  let drumAudioContext=null;
   function currentTuning(){return presets[state.instrument].tunings[state.tuningIndex];}
   function currentStrings(){return currentTuning().strings;}
   function renderTuning(){
@@ -285,6 +286,66 @@
   }
 
 
+
+  function getDrumContext(){
+    const AudioCtx=window.AudioContext||window.webkitAudioContext;
+    if(!AudioCtx)throw new Error("المتصفح لا يدعم تشغيل الصوت.");
+    if(!drumAudioContext)drumAudioContext=new AudioCtx();
+    if(drumAudioContext.state==="suspended")drumAudioContext.resume();
+    return drumAudioContext;
+  }
+  function makeDrumNoise(ctx,duration){
+    const length=Math.max(1,Math.floor(ctx.sampleRate*duration));
+    const buffer=ctx.createBuffer(1,length,ctx.sampleRate),data=buffer.getChannelData(0);
+    for(let i=0;i<length;i++)data[i]=Math.random()*2-1;
+    const source=ctx.createBufferSource();source.buffer=buffer;return source;
+  }
+  function playDrumSound(type){
+    const ctx=getDrumContext(),now=ctx.currentTime;
+    const gain=ctx.createGain();gain.connect(ctx.destination);
+    const noise=(duration,frequency,filterType,level,decay)=>{
+      const source=makeDrumNoise(ctx,duration),filter=ctx.createBiquadFilter(),amp=ctx.createGain();
+      filter.type=filterType;filter.frequency.setValueAtTime(frequency,now);
+      amp.gain.setValueAtTime(level,now);amp.gain.exponentialRampToValueAtTime(.001,now+decay);
+      source.connect(filter);filter.connect(amp);amp.connect(gain);source.start(now);source.stop(now+duration);
+    };
+    const tone=(start,end,duration,level)=>{
+      const osc=ctx.createOscillator(),amp=ctx.createGain();osc.type="sine";
+      osc.frequency.setValueAtTime(start,now);osc.frequency.exponentialRampToValueAtTime(Math.max(1,end),now+duration);
+      amp.gain.setValueAtTime(level,now);amp.gain.exponentialRampToValueAtTime(.001,now+duration);
+      osc.connect(amp);amp.connect(gain);osc.start(now);osc.stop(now+duration);
+    };
+    if(type==="dum"){tone(145,48,.24,.9);noise(.055,900,"lowpass",.22,.045);}
+    else if(type==="tak"){noise(.105,1850,"bandpass",.8,.085);tone(240,130,.055,.12);}
+    else if(type==="daf"){tone(105,72,.19,.48);noise(.22,1100,"bandpass",.45,.2);}
+    else if(type==="riq"){noise(.32,7200,"highpass",.65,.3);noise(.18,3900,"highpass",.28,.17);}
+    else if(type==="clap"){[0,.028,.056].forEach((offset,index)=>{const source=makeDrumNoise(ctx,.09),filter=ctx.createBiquadFilter(),amp=ctx.createGain();filter.type="bandpass";filter.frequency.value=1250;amp.gain.setValueAtTime(index===2?.35:.55,now+offset);amp.gain.exponentialRampToValueAtTime(.001,now+offset+.075);source.connect(filter);filter.connect(amp);amp.connect(gain);source.start(now+offset);source.stop(now+offset+.09);});}
+    else if(type==="cymbal"){noise(.85,8200,"highpass",.58,.82);noise(.55,5200,"highpass",.2,.52);}
+  }
+  function initDrumPads(){
+    const pads=$("drumPads");
+    if(!pads)return;
+    const names={dum:"دُم",tak:"تَك",daf:"دَف",riq:"رَق",clap:"تصفيق",cymbal:"صَنج"};
+    function trigger(pad){
+      try{
+        playDrumSound(pad.dataset.drum);
+        pad.classList.remove("is-hit");void pad.offsetWidth;pad.classList.add("is-hit");
+        $("drumNowPlaying").textContent="يعزف الآن: "+names[pad.dataset.drum];
+      }catch(error){$("drumNowPlaying").textContent="تعذر تشغيل الصوت. جرّب متصفحاً يدعم Web Audio.";}
+    }
+    pads.addEventListener("click",event=>{
+      const pad=event.target.closest("[data-drum]");
+      if(pad)trigger(pad);
+    });
+    document.addEventListener("keydown",event=>{
+      if(event.repeat||event.ctrlKey||event.altKey||event.metaKey)return;
+      const active=document.activeElement;
+      if(active&&(/INPUT|TEXTAREA|SELECT/.test(active.tagName)||active.isContentEditable))return;
+      const pad=pads.querySelector('[data-drum="'+({1:"dum",2:"tak",3:"daf",4:"riq",5:"clap",6:"cymbal"}[event.key]||"")+'"]');
+      if(pad){event.preventDefault();trigger(pad);}
+    });
+  }
+
   function initNavigation(){
     const nav=document.querySelector(".main-nav");
     const brand=document.querySelector(".brand");
@@ -337,5 +398,6 @@
   $("startButton").addEventListener("click",start);$("stopButton").addEventListener("click",stop);$("playReference").addEventListener("click",playReference);
   renderTuning();
   initMaqam();
+  initDrumPads();
   initNavigation();
 })();
