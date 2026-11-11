@@ -442,12 +442,13 @@
       const delay=Math.max(0,(rhythmState.nextTime-ctx.currentTime)*1000);
       window.setTimeout(()=>flashDrumPad(type),delay);
     });
-    const stepsPerBeat=pattern.stepsPerBeat||4;\n    const beat=Math.floor(step/stepsPerBeat)+1;
+    const stepsPerBeat=pattern.stepsPerBeat||4;
+    const beat=Math.floor(step/stepsPerBeat)+1;
     const beatEl=$("rhythmBeat");
     if(beatEl)beatEl.textContent="النبضة "+beat+" / "+pattern.beats;
-    const stepDuration=60/rhythmState.bpm/4;
+    const stepDuration=60/rhythmState.bpm/stepsPerBeat;
     rhythmState.nextTime+=stepDuration;
-    rhythmState.nextStep=(step+1)%(pattern.beats*4);
+    rhythmState.nextStep=(step+1)%(pattern.beats*stepsPerBeat);
   }
   async function startRhythm(){
     try{
