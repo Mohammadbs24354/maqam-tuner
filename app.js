@@ -338,7 +338,16 @@
     baladi:{name:"بلدي",beats:4,description:"إيقاع بلدي بأربع نبضات",steps:{0:["dum"],2:["tak"],4:["dum"],6:["tak"],8:["dum"],10:["tak"],12:["dum"],14:["tak"]}},
     malfuf:{name:"ملفوف",beats:2,description:"إيقاع سريع بحركة ثنائية",steps:{0:["dum"],2:["tak"],4:["tak"],6:["dum"]}},
     saidi:{name:"صعيدي",beats:4,description:"إيقاع صعيدي قوي",steps:{0:["dum"],2:["tak"],4:["dum"],6:["tak"],8:["dum"],10:["dum"],12:["tak"],14:["tak"]}},
-    wahda:{name:"وحدة كبيرة",beats:4,description:"إيقاع هادئ بأربع نبضات",steps:{0:["dum"],4:["tak"],8:["dum"],12:["tak"]}}
+    wahda:{name:"وحدة كبيرة",beats:4,description:"إيقاع هادئ بأربع نبضات",steps:{0:["dum"],4:["tak"],8:["dum"],12:["tak"]}},
+    jazzSwing:{name:"جاز سوينغ",beats:4,stepsPerBeat:3,description:"جاز بإحساس سوينغ ثلاثي؛ سنير على النبضتين الثانية والرابعة وهاي هات متحرك.",steps:{0:["bass","cymbal"],2:["shaker"],3:["snare","cymbal"],5:["shaker"],6:["bass","cymbal"],8:["shaker"],9:["snare","cymbal"],11:["shaker"]}},
+    bluesShuffle:{name:"بلوز شافل",beats:4,stepsPerBeat:3,description:"بلوز Shuffle بثلاثيات متأرجحة مع ركلة باس وسنير.",steps:{0:["bass","shaker"],2:["shaker"],3:["snare","shaker"],5:["shaker"],6:["bass","shaker"],8:["shaker"],9:["snare","shaker"],11:["shaker"]}},
+    house:{name:"هاوس",beats:4,description:"Four-on-the-floor: ركلة على كل نبضة مع سنير/تصفيق وهاي هات.",steps:{0:["bass","cymbal"],2:["shaker"],4:["bass","clap"],6:["shaker"],8:["bass","cymbal"],10:["shaker"],12:["bass","clap"],14:["shaker"]}},
+    deepHouse:{name:"ديب هاوس",beats:4,description:"هاوس هادئ وعميق مع ركلة منتظمة ونقرات خفيفة ومساحة بين الضربات.",steps:{0:["bass"],3:["shaker"],4:["bass","clap"],7:["shaker"],8:["bass"],11:["shaker"],12:["bass","clap"],15:["shaker"]}},
+    disco:{name:"ديسكو",beats:4,description:"إيقاع ديسكو راقص بأربع ركلات منتظمة وتصفيق على النبضات الخلفية.",steps:{0:["bass","cymbal"],2:["shaker"],4:["bass","clap"],6:["shaker"],8:["bass","cymbal"],10:["shaker"],12:["bass","clap"],14:["shaker"]}},
+    rock:{name:"روك",beats:4,description:"روك أساسي: ركلة وسنير متناوبان مع صنج مستمر.",steps:{0:["bass","cymbal"],2:["cymbal"],4:["snare","cymbal"],6:["cymbal"],8:["bass","cymbal"],10:["cymbal"],12:["snare","cymbal"],14:["cymbal"]}},
+    funk:{name:"فانك",beats:4,description:"فانك متزامن بضربات باس وسنير متقطعة وشيكر.",steps:{0:["bass","shaker"],3:["snare"],5:["bass","shaker"],7:["snare","shaker"],8:["bass"],10:["shaker"],12:["snare","shaker"],14:["bass","shaker"]}},
+    reggae:{name:"ريغي",beats:4,description:"ريغي بإحساس One Drop؛ تركيز على الضربة الخلفية مع فراغ في بداية الدورة.",steps:{2:["shaker"],4:["clap","cymbal"],6:["shaker"],8:["bass"],10:["shaker"],12:["clap","cymbal"],14:["shaker"]}},
+    bossaNova:{name:"بوسا نوفا",beats:4,description:"بوسا نوفا هادئة بإيقاع لاتيني متداخل وخفيف.",steps:{0:["bass"],3:["shaker"],5:["snare"],7:["shaker"],8:["bass"],10:["shaker"],12:["snare"],15:["shaker"]}}
   };
   let drumAudioContext=null;
   const rhythmState={timer:null,nextStep:0,nextTime:0,bpm:100,playing:false,pattern:"maqsum"};
@@ -433,7 +442,7 @@
       const delay=Math.max(0,(rhythmState.nextTime-ctx.currentTime)*1000);
       window.setTimeout(()=>flashDrumPad(type),delay);
     });
-    const beat=Math.floor(step/4)+1;
+    const stepsPerBeat=pattern.stepsPerBeat||4;\n    const beat=Math.floor(step/stepsPerBeat)+1;
     const beatEl=$("rhythmBeat");
     if(beatEl)beatEl.textContent="النبضة "+beat+" / "+pattern.beats;
     const stepDuration=60/rhythmState.bpm/4;
@@ -465,6 +474,27 @@
     const beat=$("rhythmBeat");if(beat)beat.textContent="جاهز";
     setDrumStatus("تم إيقاف الإيقاع. يمكنك اختيار إيقاع آخر أو العزف الحر.");
   }
+
+    document.querySelectorAll("[data-rhythm-category]").forEach(button=>{
+      button.addEventListener("click",()=>{
+        const category=button.dataset.rhythmCategory;
+        document.querySelectorAll("[data-rhythm-category]").forEach(tab=>{
+          const active=tab===button;
+          tab.classList.toggle("active",active);
+          tab.setAttribute("aria-pressed",String(active));
+        });
+        document.querySelectorAll("[data-rhythm-group]").forEach(group=>{
+          group.hidden=group.dataset.rhythmGroup!==category;
+        });
+        const group=document.querySelector('[data-rhythm-group="'+category+'"]');
+        const options=group?[...group.querySelectorAll("option")]:[];
+        if(options.length && !options.some(option=>option.value===$("rhythmSelect").value)){
+          $("rhythmSelect").value=options[0].value;
+          $("rhythmDescription").textContent=rhythmPatterns[options[0].value].description;
+          if(rhythmState.playing){stopRhythm();startRhythm();}
+        }
+      });
+    });
 
     document.querySelectorAll("[data-drum-mode]").forEach(button=>{
       button.addEventListener("click",()=>{
