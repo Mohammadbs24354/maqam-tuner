@@ -779,3 +779,12 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 @media(max-width:420px){.maqam-voice-picker{align-items:stretch;flex-direction:column;gap:6px}.maqam-voice-picker select{width:100%}}
 
 .maqam-voice-source{margin:-5px 0 14px;color:var(--muted);font-size:11px;line-height:1.7}
+
+
+/* Octave transpose controls above the maqam note tiles */
+.maqam-octave-controls{display:flex;align-items:center;justify-content:center;gap:16px;margin:0 0 14px;padding:10px 12px;border:1px solid #34475e;border-radius:12px;background:#111d2d}
+.octave-button{display:grid;place-items:center;width:42px;height:40px;border:1px solid #52647b;border-radius:10px;background:#1b2a3d;color:#f2d49a;font-size:24px;font-weight:800;line-height:1;cursor:pointer;transition:background .18s,border-color .18s,transform .18s}
+.octave-button:hover:not(:disabled){background:#34465d;border-color:#e9bd78;transform:translateY(-1px)}
+.octave-button:disabled{opacity:.35;cursor:not-allowed}
+.octave-button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.octave-label{min-width:100px;color:#f4d8a7;text-align:center;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
