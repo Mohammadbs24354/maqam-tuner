@@ -153,7 +153,7 @@ assert.match(app, /now-state\.lastAnalysisAt>=40/, "pitch detection should be th
 assert.match(app, /if\(token!==pianoState\.playbackToken\)\{voice\.stop\(\);return;\}/, "a late-loaded sample must not play after scale playback is stopped");
 assert.match(app, /playPianoNote\(midi,label,\.48,token\)/, "scale sequence cancellation token must reach note playback");
 
-const soundEffects=["crow","forestBirds","rainforest","sea","stream","thunder","wind","rain"];
+const soundEffects=["crow","forestBirds","morningBirds","flowingWater","rainBirds","rainforest","sea","stream","thunder","wind","rain"];
 for(const effect of soundEffects){
   assert.match(html,new RegExp('data-effect="'+effect+'"'),"nature page should expose "+effect);
   assert.match(app,new RegExp(effect+':\\{name:'),"nature sound should map to a real field recording: "+effect);
@@ -174,3 +174,5 @@ assert.match(html,/id="effectsStop"/,"the page must provide a stop control");
 assert.match(html,/id="effectsLoop"/,"the page must provide a loop control for long recordings");
 assert.match(css,/\.effects-grid/,"nature sound cards need a responsive grid");
 assert.match(css,/\.effect-card:focus-visible/,"sound effect controls must be keyboard accessible");
+
+assert.match(html,/11 تسجيلات|11 صوتاً|11 أصوات/, "nature library should communicate the expanded collection size");
