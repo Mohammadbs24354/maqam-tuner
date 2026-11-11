@@ -630,6 +630,7 @@
   function initSoundEffects(){
     const grid=$("effectsGrid");if(!grid)return;
     grid.addEventListener("click",event=>{
+      if(event.target.closest("a"))return;
       const card=event.target.closest(".effect-card[data-effect]");
       if(card)playSoundEffect(card.dataset.effect);
     });
